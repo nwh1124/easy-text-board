@@ -7,13 +7,8 @@ public class Main {
 		Scanner scanner = new Scanner(System.in);
 		int id = 0;
 		
-		int article1_id = 0;
-		String article1_title = "";
-		String article1_body= "";
-		
-		int article2_id = 0;
-		String article2_title = "";
-		String article2_body= "";
+		Article article1 = new Article();
+		Article article2 = new Article();
 		
 		while(true) {
 			System.out.printf("명령어 : ");
@@ -30,9 +25,9 @@ public class Main {
 						System.out.printf("내용 : ");
 						body = scanner.nextLine();
 						
-						article1_id = id;
-						article1_title = title;
-						article1_body = body;
+						article1.id = id;
+						article1.title = title;
+						article1.body = body;
 						
 						System.out.printf("==%d번 게시물 등록되었습니다==\n",id);
 						}
@@ -42,9 +37,9 @@ public class Main {
 						System.out.printf("내용 : ");
 						body = scanner.nextLine();
 							
-						article2_id = id;
-						article2_title = title;
-						article2_body = body;
+						article2.id = id;
+						article2.title = title;
+						article2.body = body;
 						
 						System.out.printf("==%d번 게시물 등록되었습니다==\n",id);
 						}
@@ -59,10 +54,10 @@ public class Main {
 						}
 					else {
 						if( id >= 1 ) {
-							System.out.printf("번호 : %d 제목 : %s\n", article1_id, article1_title);
+							System.out.printf("번호 : %d 제목 : %s\n", article1.id, article1.title);
 							}
 						if( id >= 2 ) {
-							System.out.printf("번호 : %d 제목 : %s\n", article2_id, article2_title);
+							System.out.printf("번호 : %d 제목 : %s\n", article2.id, article2.title);
 							}
 						}
 				
@@ -74,13 +69,13 @@ public class Main {
 					int inputedId = 0;
 					inputedId = Integer.parseInt(command.split(" ")[2]);
 					if( inputedId == 1) {
-						System.out.printf("번호 %d \n제목 : %s \n내용 : %s\n", article1_id, article1_title, article1_body);
+						System.out.printf("번호 %d \n제목 : %s \n내용 : %s\n", article1.id, article1.title, article1.body);
 						}
 					if( inputedId == 2) {
-						System.out.printf("번호 %d \n제목 : %s \n내용 : %s\n", article2_id, article2_title, article2_body);
+						System.out.printf("번호 %d \n제목 : %s \n내용 : %s\n", article2.id, article2.title, article2.body);
 						}
 					if( inputedId >= 3) {
-						System.out.printf("==게시물이 없습니다==\n", article1_id, article1_title, article1_body);
+						System.out.printf("==게시물이 없습니다==\n", article1.id, article1.title, article1.body);
 						}
 				}
 				else{
