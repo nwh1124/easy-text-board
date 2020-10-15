@@ -2,10 +2,12 @@ package com.sbs.example.easytextboard;
 
 import java.util.Scanner;
 
+
 public class Main {
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
 		int id = 0;
+		
 		
 		Article article1 = new Article();
 		Article article2 = new Article();
