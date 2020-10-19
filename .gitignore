@@ -1,6 +1,5 @@
 .classpath
 .project
 .settings/
-WebContent/
-pom.xml
-target/
+bin/
+.gitignore
