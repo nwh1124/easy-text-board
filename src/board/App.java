@@ -4,10 +4,10 @@ import java.util.Scanner;
 
 public class App {
 	
-	
+	int storage = storage();
 	int id = 0;
 	int articlesCount = 0;	
-	Article[] articles = new Article[100];
+	Article[] articles = new Article[storage];
 	
 	public int getIndex(int id) {
 		for (int i = 0; i <= id; i++) {
@@ -15,6 +15,13 @@ public class App {
 				return i;
 		}
 		return -1;		
+	}
+	//저장소의 크기를 입력 받음
+	public int storage() {
+		Scanner storageIn = new Scanner(System.in);
+		System.out.printf("게시물 수 최대 한도 : ");
+		int storageNum = storageIn.nextInt();
+		return storageNum+1;		
 	}
 		
 	public void run( ){
@@ -31,7 +38,7 @@ public class App {
 			command = sc.nextLine();
 		
 			if(command.equals("article add")) {
-				if(articlesCount >= articles.length) {
+				if(articlesCount >= (articles.length-1)) {
 					System.out.println("==저장 공간이 부족합니다==");
 				}else {
 					System.out.printf("제목 : ");
@@ -54,7 +61,7 @@ public class App {
 				}
 				else {
 					for(int i = 0; i < articlesCount; i++) {
-						System.out.printf("번호 : %d\n제목: %s\n",articles[i].id,articles[i].title);
+						System.out.printf("번호 : %d\n제목 : %s\n",articles[i].id,articles[i].title);
 					}
 				}
 				
@@ -77,11 +84,15 @@ public class App {
 				if(selIndex == -1) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n",inputedId);
 				}else {
-					articles[selIndex].id = articles[selIndex+1].id;
-					articles[selIndex].title = articles[selIndex+1].title;
-					articles[selIndex].body = articles[selIndex+1].body; 
-					System.out.printf("==%d번 게시물이 삭제되었습니다==\n",inputedId);
+					if(selIndex > articles.length) {
+						for(int i = selIndex; i <= articlesCount; i++) {
+							articles[i].id = articles[i+1].id;
+							articles[i].title = articles[i+1].title;
+							articles[i].body = articles[i+1].body;
+						}
+					}
 					articlesCount--;
+					System.out.printf("==%d번 게시물이 삭제되었습니다==\n",inputedId);
 				}
 			}
 			
@@ -90,9 +101,10 @@ public class App {
 				break;
 				
 			}else if(command.equals("array")) {
-				for(int i = 0; i < articlesCount+2; i++) {
+				System.out.printf("배열 크기 : %d\n",articles.length);
+				for(int i = 0; i <= articlesCount+1; i++) {
 					System.out.printf("위치 : articles[%d] 번호 : %d 제목 : %s 내용물 %s\n",
-							i, articles[i].id, articles[i].title, articles[i].body);
+						 				i, articles[i].id, articles[i].title, articles[i].body);
 				}
 			}
 			
