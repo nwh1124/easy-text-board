@@ -4,7 +4,9 @@ import java.util.Scanner;
 
 public class App {
 	
-		
+	
+	int id = 0;
+	int articlesCount = 0;	
 	Article[] articles = new Article[100];
 		
 	public void run( ){
@@ -12,12 +14,7 @@ public class App {
 		for (int i = 0; i < articles.length; i++) {
 			articles[i] = new Article();			
 		}
-		for (int i = 0; i < articles.length; i++) {
-			articles[i].id = i + 1;
-		}
 
-		int id = 0;
-		int articlesCount = 0;
 		String command;
 		Scanner sc = new Scanner(System.in);
 		
@@ -74,7 +71,7 @@ public class App {
 				else {
 					System.out.printf("==%d번 게시물이 삭제되었습니다==\n",inputedId);
 					
-					for(int i = 0; i < articles.length; i++) {
+					for(int i = 0; i < articlesCount; i++) {
 						if(inputedId == articles[i].id) {
 							while(i <= articlesCount ) {																	
 							articles[i].id = articles[i+1].id;
@@ -84,7 +81,7 @@ public class App {
 							}
 						}
 					}									
-				articlesCount = articlesCount - 1 ;
+				articlesCount--;
 				}
 			}
 			
