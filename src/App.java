@@ -73,7 +73,7 @@ public class App {
 						articles[i].time = articles[i + 1].time;
 					}
 					articlesCount--;
-					System.out.printf("%d번 게시물이 삭제되었습니다\n",index);
+					System.out.printf("== 게시물이 삭제되었습니다 ==\n");
 				}
 			}else if (command.equals("array")) {
 				for (int i = 0; i < articlesCount; i++) {
@@ -86,9 +86,9 @@ public class App {
 				if (index < 0) {
 					System.out.println("== 게시물이 존재하지 않습니다 ==");
 				} else {
-					System.out.printf("제목 수정 : ");
+					System.out.printf("새 제목 : ");
 					String modTitle = sc.nextLine();
-					System.out.printf("내용 수정 : ");
+					System.out.printf("새 내용 : ");
 					String modBody = sc.nextLine();
 					
 					System.out.printf("%d번 게시물 수정\n제목 : %s -> %s\n내용 : %s -> %s\n",
