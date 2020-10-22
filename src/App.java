@@ -3,13 +3,20 @@ import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
 public class App {
-
-	Article[] articles = new Article[33];
 	
-	public void run() {
+	Article[] articles = new Article[32];
+	int id;
+	int articlesCount;
+	
+	public App(){
 		
-		int id = 0;
-		int articlesCount = 0;
+		id = 0;
+		articlesCount = 0;
+		
+	}
+
+	public void run() {
+				
 		Scanner sc = new Scanner(System.in);
 		
 		//게시물 32개 생성
