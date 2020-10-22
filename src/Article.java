@@ -5,5 +5,6 @@ public class Article {
 	String title;
 	String body;
 	String time;
+	String pass;
 
 }
