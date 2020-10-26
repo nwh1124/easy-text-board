@@ -1,257 +1,363 @@
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class App {
 	
-	Article[] articles = new Article[32];
-	int id;
-	int articlesCount;
+	Article[] articles = new Article[32];	
+	int lastArticleId = 0;
+	int articleArrayNum = 0;
+	Date date;
+	SimpleDateFormat dayTimeFormat;
 	
-	public App(){
-		
-		id = 0;
-		articlesCount = 0;
-		
-	}
-
-	public void run() {
-				
-		Scanner sc = new Scanner(System.in);
-		
-		//게시물 32개 생성
-		for(int i = 0; i < 32; i++) {
+	Member member[] = new Member[2];
+	Member nowLogin = new Member();
+	int memberCount = 0;
+	
+		App() {
+		for(int i = 0; i < member.length; i++) {
+				member[i] = new Member();
+		}	
 			
-			String title = "0"+(i+1);
-			String body = "0"+(i+1);
-			String pass = "0000";
-			id++;
-			
-			Add(id, articlesCount,title, body, pass );
-			articlesCount++;
+		for(int i = 0; i < articles.length; i++) {
+			articles[i] = new Article();
 		}
+		lastArticleId = 0;
+		articleArrayNum = 0;
+		dayTimeFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
 		
-		while(true) {
-			System.out.println("명령어 ) ");
-			String command = sc.nextLine();
-			
-			if ( command.equals("article add")) {
-
-				System.out.println("== 게시물 등록 ==");
+		for ( int i = 0; i < articles.length; i++) {
+			lastArticleId++;
+			articles[i].id = lastArticleId;
+			articles[i].title = "0"+lastArticleId;
+			articles[i].body = "0"+lastArticleId;
+			Date initDate = new Date();
+			articles[i].time = dayTimeFormat.format(initDate);
+			articleArrayNum++;
+		}
+		for(int i = 0; i < member.length; i++) {
+			member[i] = new Member(); 
+		}
+	}
+	
+	public void run() {
+		
+	    new	App();
+		
+		Scanner sc = new Scanner(System.in);
+		String command; 
 				
-				if( articlesCount < articles.length ) {
-					System.out.printf("제목 : ");
-					String title = sc.nextLine();
-					System.out.printf("내용 : ");
-					String body = sc.nextLine();
-					System.out.printf("비밀번호 : ");
-					String pass = sc.nextLine();
-					id++;
-					
-					Add(id, articlesCount, title, body, pass);
-					
-					articlesCount++;
-				}
-			}
-			else if( command.startsWith("article list ")) {
-				System.out.println("== 게시물 목록 ==");
-				if ( articlesCount <= 0 ) {
-					System.out.println("== 등록된 게시물이 없습니다 ==");
-				}else {
-					Listing(articlesCount,command);
-				}
-			}
-			else if(command.equals("system exit")) {
-				System.out.println("== 프로그램 종료 ==");
-				break;				
-			}
-			else if ( command.startsWith("article detail ")) {
-				System.out.println("== 게시물 상세 ==");
-				int idCount = getCount(command, articlesCount);
-				if(idCount == -1 || articlesCount <= 0 ) {
-					System.out.println("== 게시물을 찾을 수 없습니다 ==");
-				}else {
-					detail(idCount);					
-				}
-			}else if( command.startsWith("article modify ")) {
-				System.out.println("== 게시물 수정 ==");
-				int idCount = getCount(command, articlesCount);
-				if(idCount == -1 || articlesCount <= 0) {
-					System.out.println("== 게시물을 찾을 수 없습니다 ==");
-				}else {
-					modify(idCount, sc);
-				}
-			}else if( command.startsWith("article delete ")) {
-				int idCount = getCount(command, articlesCount);
-				if(idCount == -1 || articlesCount <= 0) {
-					System.out.println("== 게시물을 찾을 수 없습니다 ==");
-				}else {
-					articlesCount = delete(idCount, articlesCount, sc);
-				}
-			}else if (command.startsWith("article search ")) {
-				articleSearch(command, articlesCount);
-			}
-			else if(command.equals("array")) {
-				for (int i = 0; i < articlesCount;i++) {
-					System.out.printf("articles[%d] .id = %d .title = %s .body = %s .pass %s .time = %s\n",
-							i, articles[i].id, articles[i].title, articles[i].body, articles[i].pass, articles[i].time);
-				}
-			}
+		while(true) {
 			
-			else {
+			System.out.printf("명령어 ) ");
+			command = sc.nextLine();
+			
+			if(command.equals("article add")) {
+				
+				preAdd();				
+				add(sc);
+				
+			}else if(command.startsWith("article list")) {
+				
+				listing(command);
+				
+			}else if(command.startsWith("article delete ")) {
+				
+				delete(command);
+				
+			}else if(command.startsWith("article modify ")) {
+				
+				modify(command, sc);
+			
+			}else if(command.startsWith("article detail ")) {
+				
+				detail(command);
+				
+			}else if(command.startsWith("article search ")) {
+				
+				search(command);
+			
+			}else if(command.equals("member join")) {
+				
+				Join(sc);		
+				
+			}else if(command.equals("member login")){
+				
+				Login(sc);
+			
+			}else if(command.equals("log info")) {
+				
+				System.out.println("== 현재 회원 정보 ==");
+				System.out.printf("ID = %s Password = %s Name = %s\n",nowLogin.id,nowLogin.pass,nowLogin.name);
+				
+			}else if(command.equals("exit")) {
+				System.out.println("== 종료 ==");
+				break;
+			}else {
 				System.out.println("== 잘못된 명령어 입력 ==");
 			}
-				
+		}sc.close();
+	}
+
+	
+
+	private void Login(Scanner sc) {
+
+		System.out.println("== 로그인 ==");
+		System.out.printf("Id = ");
+		String loginId = sc.nextLine();				
+		
+		int findId = -1;
+		
+		for (int i = 0; i < member.length; i++) {
+			if(member[i].id.equals(loginId)) {
+				findId = i;
+				break;
+			}
 		}
-		sc.close();	
+		
+		if(findId == -1) {
+			if(member[findId].id == null)
+				System.out.println("= 아이디가 없습니다 =");
+			else {
+				System.out.println("= 아이디가 없습니다 =");
+			}
+		}else {
+				System.out.printf("Password = ");
+				String Password = sc.nextLine();
+			if(Password.equals(member[findId].pass )) {
+					System.out.printf("=%s님 로그인 되었습니다 =\n",member[findId].name);
+					nowLogin = member[findId];
+			}else {
+					System.out.println("= 비밀번호가 틀립니다 =");
+			}
+		}
+		
 	}
 
-	private void detail(int idCount) {
-		System.out.printf("날짜 : %s\n번호 : %d\n제목 : %s\n내용 : %s\n",articles[idCount].time,
-				articles[idCount].id,articles[idCount].title,articles[idCount].body);
+	private void Join(Scanner sc) {
+
+		System.out.println("== 회원 가입 ==");
+		System.out.println("가입할 아이디 : ");
+		String LogId = sc.nextLine();
+		System.out.printf("가입할 비밀번호 : ");
+		String LogPass = sc.nextLine();
+		System.out.printf("가입자 이름 : ");
+		String LogName = sc.nextLine();
+		
+		member[memberCount].memNum = memberCount+1;
+		member[memberCount].id = LogId;
+		member[memberCount].pass = LogPass;
+		member[memberCount].name = LogName;		
+		
+		System.out.printf("==%d번 회원으로 가입되었습니다==\nID = %s Password = %s Name = %s\n",
+				member[memberCount].memNum,member[memberCount].id,member[memberCount].pass,member[memberCount].name);
+		
+		memberCount++;
 	}
 
-	Article[] Artinc(int articlesCount) {
-		
-		Article[] newArticles = new Article[articles.length*2];
-		
-		for ( int i = 0; i < articlesCount; i++ ) {
-			newArticles[i] = new Article();
-			newArticles[i] = articles[i];
-		}		
-		
-		return newArticles;
-	}
+	private void search(String command) {
 
-	private void articleSearch(String command, int articlesCount) {
-		
-		int[] searchId = new int[articlesCount];
+		System.out.println("== 게시물 검색 ==");
+		String selectedStr = commandSelectStr(command, 2);
+		int articleArrayNum[] = new int[articles.length];
 		int searchStack = 0;
-		String[] commandBits = command.split(" ");
 		
-		for (int i = 0; i < articlesCount; i++) {
-			if ( articles[i].title.contains(commandBits[2]) || articles[i].body.contains(commandBits[2])) {
-				searchId[searchStack] = i;
+		for( int i = 0; i < this.articleArrayNum; i++) {
+			if ( articles[i].title.contains(selectedStr) || articles[i].body.contains(selectedStr) ) {
+				articleArrayNum[searchStack] = i;
 				searchStack++;
 			}
 		}
-			if (searchStack == 0){
-				System.out.println("== 게시물을 찾을 수 없습니다 ==");
+		String[] commandCheck = command.split(" ");
+		
+		if ( commandCheck.length > 3 ) {
+			int selectedSearchNum = commandSelectInt(command, 3);
+			int searchArrayNum[] = new int[searchStack];
+			int searchPageSize = 10;
+			int searchPage = searchStack/searchPageSize;
+			int searchStartPoint = (searchStack-1) - (searchPageSize*(selectedSearchNum-1));
+			int searchEndPoint = searchStartPoint - searchPageSize;
+			
+			for(int i = 0; i < searchStack; i++) {
+				searchArrayNum[i] = articleArrayNum[i];
+			}
+			
+			if( searchStack == 0 ) {
+				System.out.println("= 아무것도 검색되지 않았습니다 =\n");
+			}else if(selectedSearchNum <= 0) {
+				System.out.println("= 페이지가 존재하지 않습니다 =");
+			}else if( searchPage == 0 || searchPage < selectedSearchNum) {
+				for(int i = searchStartPoint; i >= 0; i--) {
+					System.out.printf("= %d번 게시물이 검색되었습니다 =\n",searchArrayNum[i]+1);					
+				}
 			}else {
-				System.out.printf("== 일치하는 게시물 ==\n");
-				for (int j = 0; j < searchStack; j++ ) {
-					int i = searchId[j]; 
-					System.out.printf("%d번 게시물\n",articles[i].id);
+				for ( int i = searchStartPoint; i > searchEndPoint; i-- ) {
+					System.out.printf("= %d번 게시물이 검색되었습니다 =\n",searchArrayNum[i]+1);
 				}
 			}
-		
-	}
-
-	public int delete(int idCount, int articlesCount, Scanner sc) {
-		
-		
-		System.out.println("== 비밀번호를 입력하세요 ==\n(초기 설정 '0000')\n");	
-		String passCheck = sc.nextLine();
-		if (passCheck.equals(articles[idCount].pass)) {
-			for (int i = idCount; i < articlesCount-1; i++) {
-				articles[i].id = articles[i+1].id;
-				articles[i].title = articles[i+1].title;
-				articles[i].body = articles[i+1].body;
-				articles[i].time = articles[i+1].time;
-			}
-			System.out.printf("== %d번 게시물이 삭제되었습니다 ==\n",articles[idCount].id);
-			return --articlesCount;
 		}else {
-			System.out.println("== 비밀번호가 일치하지 않습니다 ==");
-			return articlesCount;
+			System.out.println("= 명령어가 잘못되었습니다 =");
 		}
+		
 	}
-
-	private void modify(int idCount, Scanner sc) {
-
-		String passCheck;
-		System.out.println("== 비밀번호를 입력하세요 ==\\n(초기 설정 '0000')\\n");	
-		passCheck = sc.nextLine();
+	
+	private void detail(String command) {
 		
+		int selectedNum = commandSelectInt(command, 2);
+		int arrayNum = -1;
 		
-		if (passCheck.equals(articles[idCount].pass)) {
-			System.out.println("제목 변경 : ");
-			String modTitle = sc.nextLine();
-			System.out.println("내용 변경 : ");
-			String modBody = sc.nextLine();
-			
-			System.out.printf("제목 : %s -> %s\n내용 : %s -> %s\n== 수정되었습니다 ==\n",
-			articles[idCount].title, modTitle, articles[idCount].body, modBody);
-			
-			articles[idCount].title = modTitle;
-			articles[idCount].body = modBody;
-		}else {
-			System.out.println("== 비밀번호가 일치하지 않습니다 ==");
-		}
-	}
-
-	private int getCount(String command, int articlesCount) {
-		
-		String[] commandBits = command.split(" ");
-		int inputedId = Integer.parseInt(commandBits[2]);
-		
-		for (int i = 0 ; i < articlesCount; i++ ) {
-			if( articles[i].id == inputedId ) {
-				return i;
+		for( int i = 0; i < articles.length; i++) {
+			if ( articles[i].id == selectedNum ) {
+				arrayNum = i;
+				break;
 			}
 		}
-		return -1;
-	}
-
-	private void Listing(int articlesCount, String command) {
-		String[] commandBits = command.split(" ");
-		int inputedId = Integer.parseInt(commandBits[2]);
-		//입력받은 '리스트 번호'를 정수화하여 inputedId에 넣음
-		
-		int forCount = (articlesCount-1) - (10*(inputedId-1)) ;
-		int page = articlesCount/10;
-		//반복문을 실행할 변수들을 선언
-		
-		if (inputedId > 0 && inputedId <= page) {
-			System.out.println("번호 / 제목");
-			for (int i = forCount; i >= forCount-9; i--) {
-				System.out.printf("%d / %s\n",articles[i].id,articles[i].title);
-			}
-		}//입력받은 값대로 최신 게시물부터 페이지 출력
-		
-		else if( inputedId == page+1){
-			System.out.println("번호 / 제목");
-			for (int i = ((articlesCount-1)-(10*(inputedId-1))); i >= 0; i--) {
-				System.out.printf("%d / %s\n",articles[i].id,articles[i].title);
-			}
-		}//입력받은 값이 마지막 리스트 페이지를 가리킬 경우 남아있는 10개 미만의 리스트 출력
-		
+		if ( arrayNum == -1 ) {
+			System.out.printf("== %d번 게시물은 존재하지 않습니다 ==\n", selectedNum);
+		}
 		else {
-			System.out.println("== 게시물 페이지가 잘못되었습니다 ==");
-		}//입력받은 값이 0, 음수, 게시물보다 많은 수를 가리킬 경우 에러 메세지 출력
+			System.out.printf("== 게시물 상세 ==\n날짜 : %s\n번호 : %d\n제목 : %s\n내용 : %s\n",
+								 articles[arrayNum].time, articles[arrayNum].id, articles[arrayNum].title, articles[arrayNum].body);
+		}
+		
+	}
+	
+	private void modify(String command, Scanner sc) {
+
+		int selectedNum = commandSelectInt(command, 2);
+		int arrayNum = -1;
+		
+		for( int i = 0; i < articles.length; i++) {
+			if ( articles[i].id == selectedNum ) {
+				arrayNum = i;
+				break;
+			}
+		}
+		if ( arrayNum == -1 || articleArrayNum == 0) {
+			System.out.printf("== %d번 게시물이 존재하지 않습니다 ==\n", selectedNum);
+		}else {
+			
+			System.out.printf("== %d번 게시물을 수정합니다 ==\n", selectedNum);
+			System.out.printf("제목 수정 : ");
+			articles[arrayNum].title = sc.nextLine();
+			System.out.printf("내용 수정 : ");
+			articles[arrayNum].body = sc.nextLine();
+			
+			System.out.println("== 수정이 완료되었습니다 ==");
+		}
+		
+	}
+	
+	private void delete(String command) {
+		
+		int selectedNum = commandSelectInt(command, 2);
+		int arrayNum = -1;
+		
+		for( int i = 0; i < articles.length; i++) {
+			if ( articles[i].id == selectedNum ) {
+				arrayNum = i;
+				break;
+			}
+		}if ( arrayNum == -1 || articleArrayNum == 0) {
+			System.out.printf("== %d번 게시물이 존재하지 않습니다 ==\n", selectedNum);
+		}else {
+			for ( int i = arrayNum; i < (articles.length - 1); i++) {
+				articles[i] = articles[i + 1];
+			}
+			articleArrayNum--;
+			System.out.printf("== %d번 게시물이 삭제되었습니다 ==\n", selectedNum);
+		}
+		
+	}
+	
+	private void listing(String command) {
+		
+		String commandBits[] = command.split(" ");
+		
+		int searchPage = 1;
+		int commandCheck = 1;
+		
+		if (commandBits.length >= 3) {
+			searchPage = commandSelectInt(command, 2);
+			commandCheck = commandSelectInt(command, 2);
+		}
+		
+		int listSize = 10;
+		int pagePoint = articleArrayNum / listSize; 
+		int startPoint = (articleArrayNum -1) - listSize * (searchPage - 1);
+						
+		System.out.printf("== 게시물 목록 = %d 페이지 ==\n",searchPage);
+		
+		if ( commandCheck <= 0  ) {
+			System.out.printf("= %d 페이지는 존재하지 않습니다 =\n= 현재 게시물 갯수 %d개 = 총 %d 페이지 =\n", commandCheck, articleArrayNum, pagePoint+1);
+		}
+		else if(pagePoint == 0 || pagePoint < searchPage) {
+			for ( int i = startPoint; i >= 0; i-- ) {
+				System.out.printf("번호 : %d 제목 : %s\n",articles[i].id, articles[i].title);
+			}
+		}else if(pagePoint > 0) {
+			for ( int i = startPoint; i > (startPoint - listSize); i--) {
+				System.out.printf("번호 : %d 제목 : %s\n",articles[i].id, articles[i].title);
+			}
+		}
+		if ( articleArrayNum == 0 ) {
+			System.out.println("== 아무 게시물도 없습니다 ==");
+		}
 	}
 
-	public void Add(int id, int articlesCount, String title, String body, String pass) {
-				if ( articlesCount >= articles.length ) {
-					
-					articles = Artinc(articlesCount);
-					
-					System.out.println("== 저장소가 확장되었습니다 ==");
-				}
-			
-				Date date;
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-				
-				articles[articlesCount] = new Article();
-				articles[articlesCount].id = id;
-				articles[articlesCount].title = title;
-				articles[articlesCount].body = body;
-				articles[articlesCount].pass = pass;
-				
-				date = new Date();
-				articles[articlesCount].time = format.format(date);
-				if ( id > 33) {
-				System.out.printf("== %d번 게시물이 생성되었습니다 ==\n", id);
-				}
+	private void preAdd() {
+		if( articleArrayNum >= articles.length) {					
+			Article[] newArticle = new Article[articles.length*2];
+			for ( int i = 0; i < articles.length*2; i++) {
+				newArticle[i] = new Article();
+			}
+			for ( int i = 0; i < articles.length; i++) {
+				newArticle[i] = articles[i];
+			}
+		articles = newArticle;
+		}		
 	}
+	
+	public void add(Scanner sc) {
+		
+		System.out.println("== 게시물 등록 ==");
+		System.out.printf("제목 : ");
+		String title = sc.nextLine();
+		System.out.printf("내용 : ");
+		String body = sc.nextLine();
+		date = new Date();
+		String dateString = dayTimeFormat.format(date);
+		lastArticleId++;	
+		
+		articles[articleArrayNum].id = lastArticleId;
+		articles[articleArrayNum].title = title;
+		articles[articleArrayNum].body = body;
+		articles[articleArrayNum].time = dateString;
+		articleArrayNum++;
+		
+		System.out.printf("== %d번 게시물이 저장되었습니다 ==\n", lastArticleId);
+	}
+	
+	private String commandSelectStr(String command, int i) {
+		String commandBits[] = command.split(" ");
+		String selectedStr = commandBits[i];
+		
+		return selectedStr;
+	}
+
+	private int commandSelectInt(String command, int i) {
+		
+		String commandBits[] = command.split(" ");
+		if (commandBits.length < 3) {
+			System.out.println("= 명령어가 잘못되었습니다 =");
+		}
+		else if (Integer.parseInt(commandBits[i]) < 0 ) {
+			return -1;
+		}
+		int seletedNum = Integer.parseInt(commandBits[i]);
+		
+		return seletedNum;
+	}
+
 }
