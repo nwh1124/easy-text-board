@@ -75,12 +75,16 @@ public class App {
 
 	private void list(String command) {
 
-		System.out.println("== 게시물 리스트 = %d페이지 ==\n");
-		
 		String[] commandBits = command.split(" ");
-		
-		// 정수형 외의 타입이 올 가능성이 있음!!
-		int selectedNum = Integer.parseInt(commandBits[2]);
+		int selectedNum = 0;
+		try {
+			selectedNum = Integer.parseInt(commandBits[2]);
+			System.out.printf("== 게시물 리스트 = %d페이지 ==\n",selectedNum);
+		}
+		catch(NumberFormatException e) {
+			System.out.println("= 페이지를 양의 정수로 입력해주세요 =");
+			return;
+		}
 		
 		int pageSelect = 1;
 		int pageSize = 10;
@@ -108,10 +112,16 @@ public class App {
 
 	private void detail(String command) {
 		
-		System.out.println("= 게시물 상세 =");
 		String[] commandBits = command.split(" ");
-		// 정수형 외의 타입이 올 가능성이 있음!!
-		int selectedNum = Integer.parseInt(commandBits[2]);
+		int selectedNum = 0;
+		try {
+			selectedNum = Integer.parseInt(commandBits[2]);
+			System.out.printf("== 게시물 상세 ==\n");
+		}
+		catch(NumberFormatException e) {
+			System.out.println("= 번호를 양의 정수로 입력해주세요 =");
+			return;
+		}
 		
 		int searchNum = -1;
 		
@@ -131,12 +141,18 @@ public class App {
 	}
 
 	private void delete(String command) {
-
-		System.out.println("= 게시물 삭제 =");
+		
 		String[] commandBits = command.split(" ");
-		// 정수형 외의 타입이 올 가능성이 있음!!
-		int selectedNum = Integer.parseInt(commandBits[2]);
-	
+		int selectedNum = 0;
+		try {
+			selectedNum = Integer.parseInt(commandBits[2]);
+			System.out.println("= 게시물 삭제 =");
+		}
+		catch(NumberFormatException e) {
+			System.out.println("= 페이지를 양의 정수로 입력해주세요 =");
+			return;
+		}
+		
 		int searchNum = -1;
 		
 		for(int i = 0; i < articles.size(); i++) {
@@ -156,11 +172,17 @@ public class App {
 
 	private void modify(Scanner sc,String command) {
 
-		System.out.println("= 게시물 수정 =");
 		String[] commandBits = command.split(" ");
-		// 정수형 외의 타입이 올 가능성이 있음!!
-		int selectedNum = Integer.parseInt(commandBits[2]);
-	
+		int selectedNum = 0;
+		try {
+			selectedNum = Integer.parseInt(commandBits[2]);
+			System.out.println("= 게시물 수정 =");
+		}
+		catch(NumberFormatException e) {
+			System.out.println("= 페이지를 양의 정수로 입력해주세요 =");
+			return;
+		}
+		
 		int searchNum = -1;
 		
 		for(int i = 0; i < articles.size(); i++) {
@@ -184,12 +206,20 @@ public class App {
 
 	private void search(String command) {
 		
-		System.out.println("= 게시물 검색 =");
+
+
 		String[] commandBits = command.split(" ");
-		// 정수형 외의 타입이 올 가능성이 있음!!
 		String selectedStr = commandBits[2];
-		int selectedNum = Integer.parseInt(commandBits[3]);
-	
+		int selectedNum = 0;
+		try {
+			selectedNum = Integer.parseInt(commandBits[3]);
+			System.out.println("= 게시물 검색 =");
+		}
+		catch(NumberFormatException e) {
+			System.out.println("= 페이지를 양의 정수로 입력해주세요 =");
+			return;
+		}
+		
 		ArrayList<Article> articleSearch = new ArrayList<Article>();
 		int searchStack = 0;
 		
