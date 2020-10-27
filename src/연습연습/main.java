@@ -38,8 +38,9 @@ public class main {
 		
 		for (int i = 0 ; i < num ; i ++) {
 			
-			String[] 능력치들 = new String[3];
-			능력치들 = sc.next().split(",");
+			String 능력치;
+			능력치 = sc.next();
+			String[] 능력치들 = 능력치.split(",");
 			
 			int 힘 = Integer.parseInt(능력치들[0]);
 			int 지능 = Integer.parseInt(능력치들[1]);
