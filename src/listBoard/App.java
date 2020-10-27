@@ -46,7 +46,8 @@ public class App {
 				modify(sc, command);
 				
 				
-			}else if(command.startsWith("article search ")) {
+			}
+			else if(command.startsWith("article search ")) {
 				
 				search(command);
 				
@@ -54,6 +55,8 @@ public class App {
 			else if ( command.equals("exit")) {
 				System.out.println("== 종료 ==");
 				break;
+			}else {
+				System.out.println("= 명령어가 잘못되었습니다 =");
 			}
 		}
 	sc.close();	
@@ -92,6 +95,7 @@ public class App {
 		
 		if(selectedNum <1 || pageCount+1 < selectedNum ) {
 			System.out.println("= 페이지 숫자가 잘못되었습니다 =");
+			return;
 		}else {
 			pageSelect = selectedNum;
 		}
@@ -239,6 +243,7 @@ public class App {
 			
 			if(selectedNum <1 || pageCount+1 < selectedNum ) {
 				System.out.println("= 페이지 숫자가 잘못되었습니다 =");
+				return;
 			}else {
 				pageSelect = selectedNum;
 			}
