@@ -6,13 +6,15 @@ public class Members {
 	String id;
 	String pass;
 	String name;
+	String time;
 	
-	Members(int num, String id, String pass, String name){
+	Members(int num, String id, String pass, String name, String time){
 		
 		this.num = num;
 		this.id = id;
 		this.pass = pass;
 		this.name = name;
+		this.time = time;
 		
 	}
 	Members(){
