@@ -1,4 +1,4 @@
-package 케릭터연습;
+package 케릭터연습_2;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -32,8 +32,8 @@ public class 케릭터 {
 		System.out.printf("번호 : %d번\n",번호);
 		System.out.printf("이름 : %s\n",이름);
 		System.out.printf("케릭터 종류 : %s\n",직업);
-		System.out.printf("태어난 해 : %d\n",태어난_해);
-		System.out.printf("나이 : %04d살\n",get나이(태어난_해));
+		System.out.printf("태어난 해 : %04d년\n",태어난_해);
+		System.out.printf("나이 : %d살\n",get나이(태어난_해));
 		System.out.printf("힘 : %d\n",힘);
 		System.out.printf("지능 : %d\n",지능);
 		System.out.printf("민첩 : %d\n",민첩);

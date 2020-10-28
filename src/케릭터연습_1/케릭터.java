@@ -1,4 +1,4 @@
-package 연습연습;
+package 케릭터연습_1;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

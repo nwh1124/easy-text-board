@@ -1,4 +1,4 @@
-package practice;
+package 게시판연습_1;
 
 public class main {
 

@@ -1,4 +1,4 @@
-package 케릭터연습;
+package 케릭터연습_2;
 
 public class 무기 {
 	

@@ -1,4 +1,4 @@
-package 연습연습;
+package 케릭터연습_1;
 
 public class 지팡이 extends 무기 {
 	지팡이(){

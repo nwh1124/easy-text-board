@@ -1,4 +1,4 @@
-package listBoard;
+package 게시판연습_2;
 
 public class Article{
 

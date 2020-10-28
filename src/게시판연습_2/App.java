@@ -1,4 +1,4 @@
-package listBoard;
+package 게시판연습_2;
 
 import java.util.Scanner;
 import java.util.ArrayList;
