@@ -88,7 +88,7 @@ class 케릭터{
 		System.out.printf("이름 : %s\n", 이름);
 		System.out.printf("케릭터 종류 : %s\n", 직업);
 		System.out.printf("태어난 해 : %04d년\n",생년);
-		System.out.printf("나이 : %d\n",get나이(생년));
+		System.out.printf("나이 : %d살\n",get나이(생년));
 		System.out.printf("힘 : %d\n",힘);
 		System.out.printf("지능 : %d\n",지능);
 		System.out.printf("민첩 : %d\n",민첩);
