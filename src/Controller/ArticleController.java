@@ -1,220 +1,227 @@
 package Controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
-import 게시판연습_1.dto.Article;
+import Container.Container;
+import Service.ArticleService;
+import Service.MemberService;
+import dto.Article;
 
 public class ArticleController extends Controller {
-
-	ArrayList<Article> articles;
-	int lastArticleId;
+	
+	Scanner sc;
+	private ArticleService articleService;
+	private MemberService memberService;
 	
 	public ArticleController() {
-		articles = new ArrayList<Article>();
-		lastArticleId = 0;
-		for (int i = 0; i < 32; i++) {
-			lastArticleId++;
-			articles.add(new Article(lastArticleId, "제목"+(i+1), "내용"+(i+1)));
-		}
-	}
-	
-	public void run(Scanner sc, String command){
+				
+		sc = Container.sc;
 		
-		if(command.equals("article add")) {
-			add(sc, command);			
-		}
-		else if(command.startsWith("article list")) {			
-			list(command);			
-		}
-		else if(command.startsWith("article detail ")) {			
-			detail(command);			
-		}
-		else if(command.startsWith("article delete ")) {			
-			delete(command);			
-		}
-		else if(command.startsWith("article modify ")) {			
-			modify(sc, command);			
-		}else if(command.startsWith("article search ")) {			
-			search(command);			
-		}
+		articleService = Container.articleService;		
+		memberService = Container.memberService;
+		
 	}
 	
+	public void doCommand(String cmd) {
+		
+		if(cmd.equals("article add")) {			
+			add();			
+		}else if(cmd.startsWith("article list")) {			
+			list(cmd);			
+		}else if(cmd.startsWith("article detail")) {			
+			detail(cmd);			
+		}else if(cmd.startsWith("article modify")) {			
+			modify(cmd);			
+		}else if(cmd.startsWith("article delete")) {			
+			delete(cmd);			
+		}else {
+			System.out.println("= 잘못된 명령어 입력 =");
+			return;
+		}
+		
+	}
 
-	public  void search(String command) {
-		System.out.println("== 게시물 검색 ==");
+	private void delete(String cmd) {
+		if(Container.session.getNowLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}
 		
-		String[] commandBits = command.split(" ");
-		String selectedStr = commandBits[2];
-		ArrayList<Article> searchArticle = new ArrayList<Article>();
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
 		
-		for(int i = 0; i < articles.size(); i++) {
-			if (articles.get(i).title.contains(selectedStr) || articles.get(i).body.contains(selectedStr)){
-				searchArticle.add(new Article (articles.get(i).id,articles.get(i).title,articles.get(i).body));
+		if(cmdBits.length > 2) {
+			try {
+				inputedId = Integer.parseInt(cmdBits[2]);
 			}
+			catch(NumberFormatException e) {
+				System.out.println("= 게시물 번호는 정수로 입력해주세요 =");
+				return;
+			}			
+		}else {
+			System.out.println("= 수정할 게시물의 번호를 입력해주세요 =");
+			return;
 		}
 		
-		int pageSize = 10;
-		int pagePoint = searchArticle.size() / pageSize;
-		
-		if(commandBits.length >= 1 && commandBits.length < 4) {
-			int startPoint = searchArticle.size()-1;
-			int endPoint = startPoint - pageSize;
-			
-			for (int i = startPoint; i > endPoint; i--) {
-				System.out.printf("번호 : %d / 제목 : %s\n", searchArticle.get(i).id,searchArticle.get(i).title);					}
+		if(inputedId <= 0 || inputedId > articleService.getArticleSize()) {
+			System.out.printf("= %d번 게시물은 존재하지 않습니다 =\n", inputedId);
+			return;
 		}
-		else if(commandBits.length >= 3) {
-			
-			int selectedPage = 0;
-			try{
-				selectedPage = Integer.parseInt(commandBits[3]);
-			}catch(NumberFormatException e) {
-				System.out.println("== 페이지 숫자를 양의 정수로 입력해주세요 ==");
+		if(articleService.getArticleMemberIdByInput(inputedId) != Container.session.getNowLoginedId()) {
+			System.out.printf("= %d번 게시물의 작성자가 아닙니다 =\n", inputedId);
+			return;
+		}
+		
+		System.out.println("= 게시물 삭제 =");
+		articleService.delete(inputedId);
+		System.out.printf("= %d번 게시물이 삭제되었습니다 =\n", inputedId);
+		
+		
+	}
+
+	private void modify(String cmd) {
+		
+		if(Container.session.getNowLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}
+		
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length > 2) {
+			try {
+				inputedId = Integer.parseInt(cmdBits[2]);
+			}
+			catch(NumberFormatException e) {
+				System.out.println("= 게시물 번호는 정수로 입력해주세요 =");
+				return;
+			}			
+		}else {
+			System.out.println("= 수정할 게시물의 번호를 입력해주세요 =");
+			return;
+		}
+		
+		if(inputedId <= 0 || inputedId > articleService.getArticleSize()) {
+			System.out.printf("= %d번 게시물은 존재하지 않습니다 =\n", inputedId);
+			return;
+		}
+		if(articleService.getArticleMemberIdByInput(inputedId) != Container.session.getNowLoginedId()) {
+			System.out.printf("= %d번 게시물의 작성자가 아닙니다 =\n", inputedId);
+			return;
+		}
+		
+		System.out.println("= 게시물 수정 =");
+
+		System.out.printf("수정할 제목 : ");
+		String modTitle = sc.nextLine();
+		System.out.printf("수정할 내용 : ");
+		String modBody = sc.nextLine();
+		
+		articleService.modify(inputedId, modTitle, modBody);
+		
+	}
+
+	private void detail(String cmd) {
+
+		System.out.println("= 게시물 상세 =");
+		
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length > 2) {
+			try {
+				inputedId = Integer.parseInt(cmdBits[2]);
+			}
+			catch(NumberFormatException e) {
+				System.out.println("= 게시물 번호는 정수로 입력해주세요 =");
 				return;
 			}
 			
-			int startPoint = (searchArticle.size()-1) - 10*(selectedPage-1);
-			int endPoint = startPoint - pageSize;
-			if( selectedPage > 0 && selectedPage <= pagePoint) {
-				for (int i = startPoint; i > endPoint; i--) {
-					System.out.printf("번호 : %d / 제목 : %s\n", searchArticle.get(i).id,searchArticle.get(i).title);
-				}
-			}else if(selectedPage == pagePoint+1) {
-				for (int i = startPoint; i >= 0; i--) {
-					System.out.printf("번호 : %d / 제목 : %s\n", searchArticle.get(i).id,searchArticle.get(i).title);				}
-			}else {
-				System.out.println("== 페이지 번호 지정이 잘못되었습니다 ==");
+		}
+		
+		if(inputedId <= 0 || inputedId > articleService.getArticleSize()) {
+			System.out.printf("= %d번 게시물은 존재하지 않습니다 =\n", inputedId);
+			return;
+		}
+		
+		
+		
+		Article detailArticle = articleService.getArticleByInput(inputedId);
+		
+		
+		String writer = memberService.getMemberNameByNum(detailArticle.memberId);
+		System.out.printf("번호 : %d\n작성자 : %s\n제목 : %s\n내용 : %s\n", detailArticle.num, writer, detailArticle.title, detailArticle.body);
+		
+	}
+
+	private void list(String cmd) {
+		
+		ArrayList<Article> listArticle = articleService.getArticle();
+		
+		if(listArticle.size() == 0) {
+			System.out.println("= 등록된 게시물이 없습니다 =");
+			return;
+		}
+		
+		System.out.println("= 게시물 목록 =");
+		
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length > 2) {
+			try {
+				inputedId = Integer.parseInt(cmdBits[2]);
 			}
-		}
-		
-	}
-
-	public  void modify(Scanner sc, String command) {
-		
-		String[] commandBits = command.split(" ");
-		int selectedNum = 0;
-		try{
-			selectedNum = Integer.parseInt(commandBits[2]);
-		}catch(NumberFormatException e) {
-			System.out.println("== 페이지 숫자를 양의 정수로 입력해주세요 ==");
-			return;
-		}
-		
-		if(selectedNum > articles.size() || selectedNum <= 0) {
-			System.out.println("== 게시물을 찾을 수 없습니다 ==");
-		}else {
-			System.out.printf("수정된 제목 : ");
-			String title = sc.nextLine();
-			System.out.printf("수정된 내용 : ");
-			String body = sc.nextLine();
-			
-			articles.set(selectedNum-1, new Article(selectedNum, title, body));
-			System.out.printf("= %d번 게시물이 수정되었습니다 =\n", selectedNum);
-		}
-		
-	}
-
-	public  void delete(String command) {
-		
-		String[] commandBits = command.split(" ");
-		int selectedNum = 0;
-		try{
-			selectedNum = Integer.parseInt(commandBits[2]);
-		}catch(NumberFormatException e) {
-			System.out.println("== 페이지 숫자를 양의 정수로 입력해주세요 ==");
-			return;
-		}
-		
-		if(selectedNum > articles.size() || selectedNum <= 0) {
-			System.out.println("== 게시물을 찾을 수 없습니다 ==");
-		}else {
-			articles.remove(selectedNum-1);
-			System.out.printf("= %d번 게시물이 삭제되었습니다 =\n", selectedNum);
-		}
-		
-	}
-
-	public  void detail(String command) {
-		
-		String[] commandBits = command.split(" ");
-		
-		int selectedNum = 0;
-		try{
-			selectedNum = Integer.parseInt(commandBits[2]);
-		}catch(NumberFormatException e) {
-			System.out.println("== 게시물 번호를 양의 정수로 입력해주세요 ==");
-			return;
-		}		
-		
-		if(selectedNum > articles.size() || selectedNum <= 0) {
-			System.out.println("== 게시물을 찾을 수 없습니다 ==");
-		}else {
-			System.out.printf("= 게시물 상세 =\n");
-			System.out.printf("날짜 : %s / 번호 : %d / 제목 : %s / 내용 : %s\n", articles.get(selectedNum-1).time,
-					articles.get(selectedNum-1).id,articles.get(selectedNum-1).title,articles.get(selectedNum-1).body);
-		}
-		
-	}
-
-	public void list(String command) {
-
-		String[] commandBits = command.split(" ");
-		int pageSize = 10;
-		int pagePoint = articles.size() / pageSize;
-		
-		if(commandBits.length >= 1 && commandBits.length < 3) {
-			int startPoint = articles.size()-1;
-			int endPoint = startPoint - pageSize;
-			
-			for (int i = startPoint; i > endPoint; i--) {
-				System.out.printf("번호 : %d / 제목 : %s / 내용 : %s\n", articles.get(i).id,articles.get(i).title,articles.get(i).body);
-			}
-		}
-		else if(commandBits.length >= 3) {
-			int selectedPage = 0;
-			try{
-				selectedPage = Integer.parseInt(commandBits[2]);
-			}catch(NumberFormatException e) {
-				System.out.println("== 페이지 숫자를 양의 정수로 입력해주세요 ==");
+			catch(NumberFormatException e) {
+				System.out.println("= 게시물 번호는 정수로 입력해주세요 =");
 				return;
-			}
-			int startPoint = (articles.size()-1) - 10*(selectedPage-1);
-			int endPoint = startPoint - pageSize;
-			if( selectedPage > 0 && selectedPage <= pagePoint) {
-				for (int i = startPoint; i > endPoint; i--) {
-					System.out.printf("번호 : %d / 제목 : %s\n", articles.get(i).id,articles.get(i).title);
-				}
-			}else if(selectedPage == pagePoint+1) {
-				for (int i = startPoint; i >= 0; i--) {
-					System.out.printf("번호 : %d / 제목 : %s\n", articles.get(i).id,articles.get(i).title);				}
-			}else {
-				System.out.println("== 페이지 번호 지정이 잘못되었습니다 ==");
-			}
+			}			
 		}
 		
+		int pageGap = 10;
+		int pagePoint = listArticle.size() / pageGap;
+		int startPoint = (listArticle.size() - 1) - pageGap*(inputedId - 1);
+		int endPoint = startPoint - pageGap;
+		
+		System.out.println("번호 / 작성자 / 제목");
+		
+		if(pagePoint == 0 || pagePoint+1 == inputedId) {
+			for(int i = startPoint; i >= 0; i--) {
+				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
+				System.out.printf("%d / %s / %s\n",listArticle.get(i).num, writer, listArticle.get(i).title);
+			}
+		}else if(pagePoint+1 < inputedId) {
+			System.out.println("= 선택된 페이지가 등록된 게시물보다 큽니다 =");
+			return;			
+		}else {
+			for(int i = startPoint; i > endPoint; i--) {
+				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
+				System.out.printf("%d / %s / %s\n",listArticle.get(i).num, writer, listArticle.get(i).title);
+			}
+		}
+				
 	}
 
-	public void add(Scanner sc, String command) {
-
-		System.out.println("== 게시물 등록 ==");
+	private void add() {
+		
+		if(Container.session.getNowLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}
+		
+		System.out.println("= 게시물 등록 =");
 
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
-		lastArticleId++;
-		SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd hh:mm:ss");
-		String time = format.format(new Date());
 		
-		articles.add(new Article(lastArticleId, title, body));
-		System.out.printf("= 등록되었습니다 =\n");
-		for(Article article : articles) {
-			System.out.printf("%d %s %s\n",article.id,article.title,article.body);
-		}
+		int id = articleService.add(Container.session.getNowLoginedId(), title, body);
 		
-	
+		System.out.printf("= %d번 게시물이 등록되었습니다 =\n", id);
+		
 	}
+
 }

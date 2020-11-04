@@ -1,203 +1,225 @@
 package Controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Scanner;
 
-import 게시판연습_1.dto.Members;
+import Container.Container;
+import Service.MemberService;
+import dto.Member;
 
-public class MemberController extends Controller{
+public class MemberController extends Controller {
 	
-	ArrayList<Members> member = new ArrayList<Members>();	
-	ArrayList<Members> nowLogin = new ArrayList<Members>();
-	int lastMembersNum = 0;
+	Container container;
+	private MemberService memberService;
+	Scanner sc;
 	
-	public	MemberController(){
-			nowLogin.add(new Members(0, "","","",""));
-		}
-	
-		public void run(Scanner sc, String command){
-					
-			if(command.equals("member join")) {			
-				join(sc);			
-			}else if(command.endsWith("member login")) {			
-				login(sc);			
-			}else if(command.equals("whoami")) {			
-				whoami();			
-			}else if(command.endsWith("log out")) {			
-				logOut();			
-			}		
-		}
+	public MemberController() {
 		
-	public void logOut() {
+		memberService = Container.memberService;
+		sc = Container.sc;
 		
-		if(nowLogin.get(0).num == 0) {
-			System.out.println("== 로그인 중이 아닙니다 ==");
-		}
-		else {
-		nowLogin.set(0, new Members(0, "", "", "",""));
-		System.out.println("== 로그아웃 되었습니다 ==");
-		return;
+	}
+	
+	public void doCommand(String cmd) {
+		
+		if(cmd.equals("member join")) {
+			join();
+		}else if(cmd.equals("member login")) {
+			login();
+		}else if(cmd.equals("member whoami")) {
+			whoami();
+		}else if(cmd.equals("member logout")) {
+			logout();
+		}else if(cmd.equals("member modify")) {
+			modify();
+		}else {
+			System.out.println("= 잘못된 회원 명령어 입력 =");
 		}
 		
 	}
 
-	public void whoami() {
+	private void modify() {
 		
-		if(nowLogin.get(0).num == 0) {
-			System.out.println("== 로그인 중이 아닙니다 ==");
+		if(Container.session.getNowLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
 			return;
 		}
-		else {
-			System.out.println("== 현재 로그인 중인 회원 정보 ==");
-			System.out.printf("등록일 : %s / Id %s / Password %s / 이름 %s\n",nowLogin.get(0).time,
-					nowLogin.get(0).id,nowLogin.get(0).pass,nowLogin.get(0).name);
-		}
-	}
+		
+		System.out.println("= 회원 정보 수정 =");
 
-	public void login(Scanner sc) {
+		System.out.printf("수정할 아이디 : ");
+		String modId = Container.sc.nextLine();		
+		System.out.printf("수정할 비밀번호 : ");
+		String modPw = Container.sc.nextLine();		
+		System.out.printf("수정할 이름 : ");
+		String modName = Container.sc.nextLine();
 		
-		if(nowLogin.get(0).num != 0) {
-			System.out.println("== 이미 로그인 중입니다 ==");
-		}else {
-		
-			System.out.println("== 로그인 ==");
-	
-			System.out.printf("ID : ");
-			String logId = sc.nextLine();
-			boolean searchId = true;
-			
-			for(Members mem : member) {
-				if(mem.id.equals(logId)) {
-					
-					searchId = false;
-					System.out.printf("Password : ");
-					
-					String logPass = sc.nextLine();
-					if(mem.pass.equals(logPass)) {
-						
-						System.out.println("== 로그인 되었습니다 ==");
-						nowLogin.set(0, mem);
-						return;
-						
-					}else {
-						System.out.println("== 비밀번호가 틀렸습니다 ==");
-						return;
-					}
-				}
-			}if(searchId) {
-			System.out.println("== ID가 존재하지 않습니다 ==");	
-		}
-		
-		}
+		int nowId = Container.session.getNowLoginedId();
+		memberService.modify(nowId, modId, modPw, modName);
 		
 	}
 
-	public void join(Scanner sc) {
-
-		System.out.println("== 회원 등록 ==");
+	private void logout() {
 		
-
-		int loginIdMaxCount = 3;
-		int loginIdCount = 0;
-		boolean loginIsValid = false;
-		String loginId = "";
+		Container.session.logout();
+		System.out.println("= 로그아웃 되었습니다 =");
 		
+	}
+
+	private void whoami() {
+		
+		if(Container.session.getNowLogined() == false) {
+			System.out.println("= 비회원입니다 =");
+			return;
+		}
+		
+		System.out.println("= 현재 회원 정보 =");
+		
+		Member whoamiMember = memberService.getMemberByNum(Container.session.getNowLoginedId());
+		
+		System.out.printf("아이디 : %s\n이름 : %s\n", whoamiMember.loginId, whoamiMember.name);
+	}
+
+	private void login() {
+		if(Container.session.getNowLogined()) {
+			System.out.println("= 이미 로그인 중입니다 =");
+			return;
+		}
+		
+		int missCount;
+		int missCountMax;
+		String loginId;
+		String loginPw;
+		
+		missCountMax = 3;
+		missCount = 0;
+		
+		System.out.println("= 회원 로그인 =");
 		
 		while(true) {
+			if(missCount >= missCountMax) {
+				System.out.println("= 로그인 취소 =");
+				return;
+			}
 			
-			if(loginIdCount >= loginIdMaxCount ) {
-				System.out.println("== 가입할 수 없습니다 = 입력 실패 누적 ==");
-				break;
-			}
-			System.out.printf("Login Id : ");
-			loginId = sc.nextLine().trim();
-			if(loginId.length() == 0) {
-				System.out.println("== Login Id를 정확히 입력해주세요 ==");
-				loginIdCount++;
+			System.out.printf("로그인 아이디 : ");
+			loginId = sc.nextLine();
+			
+			if(loginId.trim().length() == 0) {
+				System.out.println("= 아이디를 정확히 입력해주세요 =");
+				missCount++;
 				continue;
-			}if(isJoinableLoginId(loginId)) {
-				System.out.println("== 이미 사용중인 아이디입니다 ==");
-				loginIdCount++;
-				continue;
-			}
-			loginIsValid = true;
-			break;
+			}else if(memberService.checkIdById(loginId) == false) {
+				System.out.println("= 존재하지 않는 아이디입니다 =");
+				missCount++;
+				continue;				
+			}else {				
+				break;				
+			}				
 		}
 		
-		int passMaxCount = 3;
-		int passCount = 0;
-		String password = "";
-	
-		while(true) {	
-			if(loginIdCount >= loginIdMaxCount ) {
-			break;
-			}			
-			if(passCount >= passMaxCount) {
-				System.out.println("== 로그인할 수 없습니다 = 입력 실패 누적 ==");
-				break;
-			}
-			
-			System.out.printf("Password : ");
-			password = sc.nextLine().trim();
-			
-			if(password.length() == 0) {
-				System.out.println("== 비밀번호를 정확히 입력해주세요 ==");
-				passCount++;
-				continue;
-			}
-			break;
-		}
-		
-		int nameMaxCount = 3;
-		int nameCount = 0;
-		String name = "";
+		missCount = 0;
+		Member loginMember = memberService.getMemberById(loginId);
 		
 		while(true) {
-			if(loginIdCount >= loginIdMaxCount ) {
-				break;
-				}
-			if(passCount >= passMaxCount ) {
-				break;
-				}
-			if(nameCount >= nameMaxCount) {
-				System.out.println("== 로그인할 수 없습니다 = 입력 실패 누적 ==");
-				break;
+			if(missCount >= missCountMax) {
+				System.out.println("= 로그인 취소 =");
+				return;
 			}
-			System.out.printf("Name : ");
-			name = sc.nextLine().trim();
-			if(name.length() == 0) {
-				System.out.println("== 정확히 입력해주세요 ==");
-				nameCount++;
-				continue;
-			}
-			break;
-		}
-		
-		if(nameCount < nameMaxCount && passCount < passMaxCount && loginIdCount < loginIdMaxCount) {
-			SimpleDateFormat form = new SimpleDateFormat("yyyy-MMMM-dddd");
-			String time = form.format(new Date());
 			
-			member.add(new Members(lastMembersNum, loginId, password, name, time));
-			System.out.println("== 가입되었습니다 ==");
-		}
+			System.out.printf("로그인 비밀번호 : ");
+			loginPw = sc.nextLine();		
+			
+			if(loginMember.loginPw.equals(loginPw) == false) {
+				System.out.println("= 비밀번호가 일치하지 않습니다 =");
+				missCount++;
+				continue;
+			}else {				
+				break;				
+			}				
+		}		
 		
+		Container.session.login(loginMember.num);
+		System.out.printf("= %d번 회원님, 환영합니다! =\n", loginMember.num);
 		
+	}
+
+	private void join() {
+		
+		System.out.println("= 회원 가입 =");
+		
+		int missCount = 0;
+		int missCountMax = 3;
+		String loginId;
+		String loginPw;
+		String name;
+		
+		while(true) {
+			if(missCount >= missCountMax) {
+				System.out.println("= 회원 가입 취소 =");
+				return;
+			}
+			
+			System.out.printf("로그인 아이디 : ");
+			loginId = sc.nextLine();
+			
+			if(loginId.trim().length() == 0) {
+				System.out.println("= 아이디를 정확히 입력해주세요 =");
+				missCount++;
+				continue;
+			}else if(memberService.checkIdById(loginId)) {
+				System.out.println("= 이미 존재하는 아이디입니다 =");
+				missCount++;
+				continue;
 				
-	}
-
-	boolean isJoinableLoginId(String loginId) {
-		
-		boolean idCheck = false;
-		for(int i = 0; i < member.size(); i++) {
-			if(member.get(i).id.equals(loginId)) {
-				idCheck = true;
-				break;
-			}
+			}else {				
+				break;				
+			}				
 		}
-		return idCheck;
+		
+		missCount = 0;
+		
+		while(true) {
+			if(missCount >= missCountMax) {
+				System.out.println("= 회원 가입 취소 =");
+				return;
+			}
+			
+			System.out.printf("로그인 비밀번호 : ");
+			loginPw = sc.nextLine();
+			
+			if(loginPw.trim().length() == 0) {
+				System.out.println("= 비밀번호를 정확히 입력해주세요 =");
+				missCount++;
+				continue;
+			}else {				
+				break;				
+			}				
+		}
+		
+		missCount = 0;
+		
+		while(true) {
+			if(missCount >= missCountMax) {
+				System.out.println("= 회원 가입 취소 =");
+				return;
+			}
+			
+			System.out.printf("이름 : ");
+			name = sc.nextLine();
+			
+			if(name.trim().length() == 0) {
+				System.out.println("= 정확히 입력해주세요 =");
+				missCount++;
+				continue;
+			}else {				
+				break;				
+			}				
+		}
+		
+		int idNum = memberService.join(loginId, loginPw, name);
+		
+		System.out.printf("= %d번 회원으로 가입되었습니다 =\n", idNum);
+		
 	}
 	
 }
