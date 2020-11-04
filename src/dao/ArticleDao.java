@@ -19,8 +19,12 @@ public class ArticleDao {
 
 	private void makeTestArticle() {
 		
-		add(1, "주말이 빨리 왔으면", "코딩하면 시간 잘 간다");
-		add(2, "워어어어얼화아아수우모옥금", "퇼");
+		for(int i = 1; i <= 16; i++) {
+			add(1, "제목 " + i, "내용 " + i);
+		}
+		for(int i = 17; i <= 32; i++) {
+			add(2, "제목 " + i, "내용 " + i);
+		}
 		
 	}
 

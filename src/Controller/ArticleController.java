@@ -27,8 +27,8 @@ public class ArticleController extends Controller {
 		
 		if(cmd.equals("article add")) {			
 			add();			
-		}else if(cmd.equals("article list")) {			
-			list();			
+		}else if(cmd.startsWith("article list")) {			
+			list(cmd);			
 		}else if(cmd.startsWith("article detail")) {			
 			detail(cmd);			
 		}else if(cmd.startsWith("article modify")) {			
@@ -156,7 +156,7 @@ public class ArticleController extends Controller {
 		
 	}
 
-	private void list() {
+	private void list(String cmd) {
 		
 		ArrayList<Article> listArticle = articleService.getArticle();
 		
@@ -167,14 +167,41 @@ public class ArticleController extends Controller {
 		
 		System.out.println("= 게시물 목록 =");
 		
-		System.out.println("번호 / 작성자 / 제목");
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
 		
-		for(Article article : listArticle) {
-			String writer = memberService.getMemberNameByNum(article.num);
-			System.out.printf("%d / %s / %s\n", article.num, writer ,article.title);
+		if(cmdBits.length > 2) {
+			try {
+				inputedId = Integer.parseInt(cmdBits[2]);
+			}
+			catch(NumberFormatException e) {
+				System.out.println("= 게시물 번호는 정수로 입력해주세요 =");
+				return;
+			}			
 		}
 		
+		int pageGap = 10;
+		int pagePoint = listArticle.size() / pageGap;
+		int startPoint = (listArticle.size() - 1) - pageGap*(inputedId - 1);
+		int endPoint = startPoint - pageGap;
 		
+		System.out.println("번호 / 작성자 / 제목");
+		
+		if(pagePoint == 0 || pagePoint+1 == inputedId) {
+			for(int i = startPoint; i >= 0; i--) {
+				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
+				System.out.printf("%d / %s / %s\n",listArticle.get(i).num, writer, listArticle.get(i).title);
+			}
+		}else if(pagePoint+1 < inputedId) {
+			System.out.println("= 선택된 페이지가 등록된 게시물보다 큽니다 =");
+			return;			
+		}else {
+			for(int i = startPoint; i > endPoint; i--) {
+				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
+				System.out.printf("%d / %s / %s\n",listArticle.get(i).num, writer, listArticle.get(i).title);
+			}
+		}
+				
 	}
 
 	private void add() {
