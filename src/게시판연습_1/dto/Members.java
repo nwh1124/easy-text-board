@@ -18,10 +18,6 @@ public class Members {
 		
 	}
 	public Members(){
-		this.num = 0;
-		this.id = "";
-		this.pass = "";
-		this.name = "";
 		
 	}
 }
