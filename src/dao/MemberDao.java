@@ -15,15 +15,6 @@ public class MemberDao {
 		members = new ArrayList<>();
 		lastMemberNum = 0;
 		
-		makeTestMember();
-	}
-
-	private void makeTestMember() {
-		
-		join("aaa", "aaa", "aaa");
-		join("bbb", "bbb", "bbb");
-		join("ccc", "ccc", "ccc");
-		
 	}
 
 	public boolean checkIdById(String loginId) {

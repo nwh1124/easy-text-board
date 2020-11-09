@@ -22,24 +22,6 @@ public class ArticleDao {
 		boards = new ArrayList<>();
 		lastBoardNum = 0;
 		
-		makeTestArticle();
-	}
-	
-	private void makeTestArticle() {
-				
-		makeBoard("공지사항");	
-		
-		for(int i = 1; i <= 5; i++) {
-			add(1, 1, "제목 " + i, "내용 " + i);
-		}
-		
-		makeBoard("자유");
-		for(int i = 6; i <= 10; i++) {
-			add(2, 2, "제목 " + i, "내용 " + i);
-		}
-		
-		Container.session.selectBoard(1);
-		
 	}
 	
 	public int makeBoard(String boardName) {
@@ -54,7 +36,7 @@ public class ArticleDao {
 	public int add(int selectedBoardId, int nowLoginedId, String title, String body) {
 		
 		lastArticleNum++;
-		articles.add(new Article(selectedBoardId ,lastArticleNum, nowLoginedId, title, body));
+		articles.add(new Article(selectedBoardId, lastArticleNum, nowLoginedId, title, body));
 		
 		return lastArticleNum;
 		
@@ -142,6 +124,10 @@ public class ArticleDao {
 
 	public int getBoardSize() {
 		return boards.size();
+	}
+
+	public ArrayList<Board> getBoard() {
+		return boards;
 	}
 
 }

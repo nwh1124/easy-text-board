@@ -70,7 +70,7 @@ public class ArticleController extends Controller {
 		
 		int selectedBoardId = Container.session.getSelectedBoardId();
 		
-		System.out.printf("=%s(%d번) 게시판에 등록된 게시물 %d개 =\n", list.get(selectedBoardId).name, list.get(selectedBoardId).num, articleService.getArticleSize(selectedBoardId));
+		System.out.printf("=%s(%d번) 게시판에 등록된 게시물 %d개 =\n", list.get(selectedBoardId-1).name, list.get(selectedBoardId-1).num, articleService.getArticleSize(selectedBoardId-1));
 		
 		for(int i = 0; i < list.size(); i++) {
 			System.out.printf("게시판 번호 : %d / 게시판 이름 : %s\n", list.get(i).num, list.get(i).name);
@@ -85,23 +85,13 @@ public class ArticleController extends Controller {
 		
 		if(cmdBits.length < 3) {
 			System.out.printf("선택할 게시판 번호를 입력해주세요 : ");
-			int boardSelect = sc.nextInt();
+			inputedId = sc.nextInt();
 			
-			if(boardSelect >= articleService.getBoardSize()) {
-				System.out.printf("= %d번 게시판은 존재하지 않습니다 =\n", boardSelect);
-				return;
-			}
-			
-			Container.session.selectBoard(boardSelect);
-			String boardName = articleService.getBoardName(boardSelect);
-			System.out.printf("= %s(%d번) 게시판이 선택되었습니다 =\n", boardName, boardSelect);
-			
-			return;
 		}else {
 			inputedId = Integer.parseInt(cmdBits[2]);
 		}
 		
-		if(inputedId >= articleService.getBoardSize()) {
+		if(inputedId > articleService.getBoardSize()) {
 			System.out.printf("= %d번 게시판은 존재하지 않습니다 =\n", inputedId);
 			return;
 		}
@@ -296,7 +286,8 @@ public class ArticleController extends Controller {
 		ArrayList<Article> listArticle = articleService.getArrayListListing(Container.session.getSelectedBoardId());
 		
 		if(listArticle.size() == 0) {
-			System.out.println("= 등록된 게시물이 없습니다 =");
+			String boardName = articleService.getBoardName(Container.session.getSelectedBoardId());
+			System.out.printf("= %s 게시판에 등록된 게시물이 없습니다 =\n", boardName);
 			return;
 		}
 		
@@ -355,7 +346,7 @@ public class ArticleController extends Controller {
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 		
-		int id = articleService.add(Container.session.getNowLoginedId(), title, body);
+		int id = articleService.add(Container.session.getSelectedBoardId(), Container.session.getNowLoginedId(), title, body);
 		
 		System.out.printf("= %d번 게시물이 등록되었습니다 =\n", id);
 		
