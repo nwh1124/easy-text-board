@@ -1,6 +1,7 @@
 package Controller;
 
 import java.util.ArrayList;
+
 import java.util.Scanner;
 
 import Board.Board;
@@ -44,6 +45,8 @@ public class ArticleController extends Controller {
 			selectBoard(cmd);			
 		}else if(cmd.startsWith("article boardList")) {			
 			boardList();			
+		}else if(cmd.startsWith("article curruntBoard")) {			
+			curuuntBoard();			
 		}else {
 			System.out.println("= 잘못된 명령어 입력 =");
 			return;
@@ -51,13 +54,26 @@ public class ArticleController extends Controller {
 		
 	}
 
+	private void curuuntBoard() {
+		
+		String nowBoard = articleService.getBoardName(Container.session.getSelectedBoardId());
+		System.out.printf("= 현재 선택된 게시판은 %s 게시판입니다 =\n", nowBoard);
+
+	}
+
 	private void boardList() {
+		
 		System.out.println("= 게시판 목록 =");
+		
 		
 		ArrayList<Board> list = articleService.getArrayListBoard();
 		
+		int selectedBoardId = Container.session.getSelectedBoardId();
+		
+		System.out.printf("=%s(%d번)에 등록된 게시물 %d개 =\n", list.get(selectedBoardId).name, list.get(selectedBoardId).num, articleService.getArticleSize(selectedBoardId));
+		
 		for(int i = 0; i < list.size(); i++) {
-			System.out.printf("게시판 번호 : %d / 게시판 이름 : %s / 등록된 게시글 : %d\n", list.get(i).num, list.get(i).name, articleService.getArticleSize(i));
+			System.out.printf("게시판 번호 : %d / 게시판 이름 : %s\n", list.get(i).num, list.get(i).name);
 		}
 		
 	}

@@ -10,7 +10,7 @@ public class Session {
 		
 		nowLogined = false;
 		nowLoginedId = 0;
-		selectedBoardId = 1;
+		selectedBoardId = 0;
 		
 	}
 

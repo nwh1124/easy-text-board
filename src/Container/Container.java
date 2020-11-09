@@ -2,7 +2,6 @@ package Container;
 
 import java.util.Scanner;
 
-import Board.Board;
 import Service.ArticleService;
 import Service.MemberService;
 import Session.Session;

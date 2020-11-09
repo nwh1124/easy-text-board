@@ -10,21 +10,11 @@ import dto.Article;
 public class ArticleService {
 
 	private ArticleDao articleDao;
-	private ArrayList<Board> boards;
-	int lastBoardNum;
 
 	public ArticleService(){
 		
 		articleDao = Container.articleDao;
-		boards = new ArrayList();
-		lastBoardNum = 0;
 		
-		board_init();
-		
-	}
-
-	private void board_init() {
-		makeBoard("공지사항");
 	}
 
 	public int add(int nowLoginedId, String title, String body) {
@@ -64,25 +54,15 @@ public class ArticleService {
 	}
 
 	public int makeBoard(String boardName) {
-		
-		lastBoardNum++;
-		boards.add(new Board(lastBoardNum, boardName)); 		
-		
-		return lastBoardNum;
-		
+		return articleDao.makeBoard(boardName);		
 	}
-
+	
 	public String getBoardName(int inputedId) {
-		for(Board board : boards) {
-			if(board.num == inputedId) {
-				return board.name;
-			}
-		}
-		return null;
+		return articleDao.getBoardName(inputedId);
 	}
 
 	public ArrayList<Board> getArrayListBoard() {
-		return boards;
+		return articleDao.getArrayListBoard();
 	}
 	
 }
