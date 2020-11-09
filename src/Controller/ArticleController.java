@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import java.util.Scanner;
 
-import Board.Board;
+import dto.Board;
 import Container.Container;
 import Service.ArticleService;
 import Service.MemberService;
@@ -70,7 +70,7 @@ public class ArticleController extends Controller {
 		
 		int selectedBoardId = Container.session.getSelectedBoardId();
 		
-		System.out.printf("=%s(%d번)에 등록된 게시물 %d개 =\n", list.get(selectedBoardId).name, list.get(selectedBoardId).num, articleService.getArticleSize(selectedBoardId));
+		System.out.printf("=%s(%d번) 게시판에 등록된 게시물 %d개 =\n", list.get(selectedBoardId).name, list.get(selectedBoardId).num, articleService.getArticleSize(selectedBoardId));
 		
 		for(int i = 0; i < list.size(); i++) {
 			System.out.printf("게시판 번호 : %d / 게시판 이름 : %s\n", list.get(i).num, list.get(i).name);
@@ -87,6 +87,11 @@ public class ArticleController extends Controller {
 			System.out.printf("선택할 게시판 번호를 입력해주세요 : ");
 			int boardSelect = sc.nextInt();
 			
+			if(boardSelect >= articleService.getBoardSize()) {
+				System.out.printf("= %d번 게시판은 존재하지 않습니다 =\n", boardSelect);
+				return;
+			}
+			
 			Container.session.selectBoard(boardSelect);
 			String boardName = articleService.getBoardName(boardSelect);
 			System.out.printf("= %s(%d번) 게시판이 선택되었습니다 =\n", boardName, boardSelect);
@@ -94,6 +99,11 @@ public class ArticleController extends Controller {
 			return;
 		}else {
 			inputedId = Integer.parseInt(cmdBits[2]);
+		}
+		
+		if(inputedId >= articleService.getBoardSize()) {
+			System.out.printf("= %d번 게시판은 존재하지 않습니다 =\n", inputedId);
+			return;
 		}
 		
 		System.out.println("= 게시판 선택 =");
@@ -109,7 +119,18 @@ public class ArticleController extends Controller {
 //		System.out.println("= 관리자 체크 같은 거 ? =");
 		
 		System.out.printf("게시판 이름 : ");
-		String boardName = sc.nextLine();
+		
+		String boardName;
+		
+		while(true) {
+			boardName = sc.nextLine();
+			if(boardName.trim().length() > 0) {
+				break;
+			}else {
+				System.out.println("= 생성할 게시판의 이름을 입력해주세요 =");
+				continue;
+			}				
+		}
 		
 		int boardId = articleService.makeBoard(boardName);
 		System.out.printf("= %s(%d번) 게시판이 생성되었습니다 =\n", boardName, boardId);

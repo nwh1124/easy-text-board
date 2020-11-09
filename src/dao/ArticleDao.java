@@ -2,7 +2,8 @@ package dao;
 
 import java.util.ArrayList;
 
-import Board.Board;
+import Container.Container;
+import dto.Board;
 import dto.Article;
 
 public class ArticleDao {
@@ -24,15 +25,6 @@ public class ArticleDao {
 		makeTestArticle();
 	}
 	
-	public int makeBoard(String boardName) {
-		
-		lastBoardNum++;
-		boards.add(new Board(lastBoardNum, boardName)); 		
-		
-		return lastBoardNum;
-		
-	}
-
 	private void makeTestArticle() {
 				
 		makeBoard("공지사항");	
@@ -45,6 +37,17 @@ public class ArticleDao {
 		for(int i = 6; i <= 10; i++) {
 			add(2, 2, "제목 " + i, "내용 " + i);
 		}
+		
+		Container.session.selectBoard(1);
+		
+	}
+	
+	public int makeBoard(String boardName) {
+		
+		lastBoardNum++;
+		boards.add(new Board(lastBoardNum, boardName)); 		
+		
+		return lastBoardNum;
 		
 	}
 
@@ -135,6 +138,10 @@ public class ArticleDao {
 			}
 		}
 		return list;
+	}
+
+	public int getBoardSize() {
+		return boards.size();
 	}
 
 }

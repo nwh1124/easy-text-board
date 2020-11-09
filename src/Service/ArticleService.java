@@ -2,7 +2,7 @@ package Service;
 
 import java.util.ArrayList;
 
-import Board.Board;
+import dto.Board;
 import Container.Container;
 import dao.ArticleDao;
 import dto.Article;
@@ -63,6 +63,10 @@ public class ArticleService {
 
 	public ArrayList<Board> getArrayListBoard() {
 		return articleDao.getArrayListBoard();
+	}
+
+	public int getBoardSize() {
+		return articleDao.getBoardSize();
 	}
 	
 }
