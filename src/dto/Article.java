@@ -2,6 +2,7 @@ package dto;
 
 public class Article {
 
+	public int boardId;
 	public int num;
 	public int memberId;
 	public String title;
@@ -10,8 +11,9 @@ public class Article {
 	public Article() {
 		
 	}
-	public Article(int num, int memberId, String title, String body) {
+	public Article(int boardId, int num, int memberId, String title, String body) {
 	
+		this.boardId = boardId;
 		this.num = num;
 		this.memberId = memberId;
 		this.title = title;

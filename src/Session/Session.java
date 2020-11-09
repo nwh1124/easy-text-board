@@ -4,11 +4,13 @@ public class Session {
 	
 	boolean nowLogined;
 	int nowLoginedId;
+	int selectedBoardId;
 	
 	public Session() {
 		
 		nowLogined = false;
 		nowLoginedId = 0;
+		selectedBoardId = 1;
 		
 	}
 
@@ -28,6 +30,14 @@ public class Session {
 	public void logout() {
 		nowLogined = false;
 		nowLoginedId = 0;
+	}
+
+	public int getSelectedBoardId() {
+		return selectedBoardId;
+	}
+
+	public void selectBoard(int inputedId) {
+		selectedBoardId = inputedId;
 	}
 
 }

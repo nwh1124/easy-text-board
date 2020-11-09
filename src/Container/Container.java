@@ -2,6 +2,7 @@ package Container;
 
 import java.util.Scanner;
 
+import Board.Board;
 import Service.ArticleService;
 import Service.MemberService;
 import Session.Session;
@@ -19,6 +20,7 @@ public class Container {
 	public static ArticleDao articleDao;
 	public static ArticleService articleService;
 	
+	
 	static {
 		
 		sc = new Scanner(System.in);
@@ -29,7 +31,7 @@ public class Container {
 		
 		articleDao = new ArticleDao();
 		articleService = new ArticleService();
-		
+				
 	}
 	
 }

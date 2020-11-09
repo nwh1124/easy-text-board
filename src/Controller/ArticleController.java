@@ -3,6 +3,7 @@ package Controller;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Board.Board;
 import Container.Container;
 import Service.ArticleService;
 import Service.MemberService;
@@ -35,11 +36,108 @@ public class ArticleController extends Controller {
 			modify(cmd);			
 		}else if(cmd.startsWith("article delete")) {			
 			delete(cmd);			
+		}else if(cmd.startsWith("article search")) {			
+			search(cmd);			
+		}else if(cmd.startsWith("article makeBoard")) {			
+			makeBoard();			
+		}else if(cmd.startsWith("article selectBoard")) {			
+			selectBoard(cmd);			
+		}else if(cmd.startsWith("article boardList")) {			
+			boardList();			
 		}else {
 			System.out.println("= 잘못된 명령어 입력 =");
 			return;
 		}
 		
+	}
+
+	private void boardList() {
+		System.out.println("= 게시판 목록 =");
+		
+		ArrayList<Board> list = articleService.getArrayListBoard();
+		
+		for(int i = 0; i < list.size(); i++) {
+			System.out.printf("게시판 번호 : %d / 게시판 이름 : %s / 등록된 게시글 : %d\n", list.get(i).num, list.get(i).name, articleService.getArticleSize(i));
+		}
+		
+	}
+
+	private void selectBoard(String cmd) {
+		
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length < 3) {
+			System.out.printf("선택할 게시판 번호를 입력해주세요 : ");
+			int boardSelect = sc.nextInt();
+			
+			Container.session.selectBoard(boardSelect);
+			String boardName = articleService.getBoardName(boardSelect);
+			System.out.printf("= %s(%d번) 게시판이 선택되었습니다 =\n", boardName, boardSelect);
+			
+			return;
+		}else {
+			inputedId = Integer.parseInt(cmdBits[2]);
+		}
+		
+		System.out.println("= 게시판 선택 =");
+		
+		Container.session.selectBoard(inputedId);
+		String boardName = articleService.getBoardName(inputedId);
+		System.out.printf("= %s(%d번) 게시판이 선택되었습니다 =\n", boardName, inputedId);
+		
+	}
+
+	private void makeBoard() {
+
+//		System.out.println("= 관리자 체크 같은 거 ? =");
+		
+		System.out.printf("게시판 이름 : ");
+		String boardName = sc.nextLine();
+		
+		int boardId = articleService.makeBoard(boardName);
+		System.out.printf("= %s(%d번) 게시판이 생성되었습니다 =\n", boardName, boardId);
+		
+	}
+
+	private void search(String cmd) {
+			
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
+		
+		String searchWord = cmdBits[2];
+		ArrayList<Article> searchList = articleService.getArrayListBySearchWord(searchWord);
+		
+		if(cmdBits.length > 3) {
+			inputedId = Integer.parseInt(cmdBits[3]);
+		}
+		
+		int pageGap = 10;
+		int pagePoint = searchList.size()/pageGap;
+		int startPoint = (searchList.size() - 1) - pageGap*(inputedId - 1);
+		int endPoint = startPoint - pageGap;
+		
+		if(pagePoint+1 < inputedId || startPoint < 0) {
+			System.out.printf("= 게시물 페이지 입력이 잘못되었습니다 =\n");
+			return;
+		}
+		
+		System.out.println("= 게시물 목록 =");
+		System.out.println("번호 / 작성자 / 제목");
+		
+		if(pagePoint == 0 || pagePoint + 1 == inputedId) {
+			for(int i = startPoint; i >= 0; i--) {
+				String writer = memberService.getMemberNameByNum(searchList.get(i).memberId);
+				System.out.printf("%d / %s / %s\n", searchList.get(i).num, writer, searchList.get(i).title);
+			}
+		}else if(pagePoint > 0 && pagePoint >= inputedId ) {
+			for(int i = startPoint; i > endPoint; i--) {
+				String writer = memberService.getMemberNameByNum(searchList.get(i).memberId);
+				System.out.printf("%d / %s / %s\n", searchList.get(i).num, writer, searchList.get(i).title);
+			}
+		}
+		
+	
 	}
 
 	private void delete(String cmd) {
@@ -158,7 +256,7 @@ public class ArticleController extends Controller {
 
 	private void list(String cmd) {
 		
-		ArrayList<Article> listArticle = articleService.getArticle();
+		ArrayList<Article> listArticle = articleService.getArrayListListing(Container.session.getSelectedBoardId());
 		
 		if(listArticle.size() == 0) {
 			System.out.println("= 등록된 게시물이 없습니다 =");
@@ -185,12 +283,13 @@ public class ArticleController extends Controller {
 		int startPoint = (listArticle.size() - 1) - pageGap*(inputedId - 1);
 		int endPoint = startPoint - pageGap;
 		
-		System.out.println("번호 / 작성자 / 제목");
+		System.out.println("게시판 / 번호 / 작성자 / 제목");
 		
 		if(pagePoint == 0 || pagePoint+1 == inputedId) {
 			for(int i = startPoint; i >= 0; i--) {
 				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
-				System.out.printf("%d / %s / %s\n",listArticle.get(i).num, writer, listArticle.get(i).title);
+				String boardName = articleService.getBoardName(listArticle.get(i).boardId);
+				System.out.printf("%s / %d / %s / %s\n", boardName, listArticle.get(i).num, writer, listArticle.get(i).title);
 			}
 		}else if(pagePoint+1 < inputedId) {
 			System.out.println("= 선택된 페이지가 등록된 게시물보다 큽니다 =");
@@ -198,7 +297,8 @@ public class ArticleController extends Controller {
 		}else {
 			for(int i = startPoint; i > endPoint; i--) {
 				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
-				System.out.printf("%d / %s / %s\n",listArticle.get(i).num, writer, listArticle.get(i).title);
+				String boardName = articleService.getBoardName(listArticle.get(i).boardId);
+				System.out.printf("%s / %d / %s / %s\n", boardName, listArticle.get(i).num, writer, listArticle.get(i).title);
 			}
 		}
 				
