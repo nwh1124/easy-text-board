@@ -150,23 +150,21 @@ public class ArticleController extends Controller {
 		int startPoint = (searchList.size() - 1) - pageGap*(inputedId - 1);
 		int endPoint = startPoint - pageGap;
 		
-		if(pagePoint+1 < inputedId || startPoint < 0) {
+/*		if(pagePoint+1 < inputedId || startPoint < 0) {
 			System.out.printf("= 게시물 페이지 입력이 잘못되었습니다 =\n");
 			return;
 		}
-		
-		System.out.println("= 게시물 목록 =");
+*/		
+		System.out.printf("= 검색어 %s가 포함된 게시물 목록 =\n", searchWord);
 		System.out.println("번호 / 작성자 / 제목");
 		
 		if(pagePoint == 0 || pagePoint + 1 == inputedId) {
 			for(int i = startPoint; i >= 0; i--) {
-				String writer = memberService.getMemberNameByNum(searchList.get(i).memberId);
-				System.out.printf("%d / %s / %s\n", searchList.get(i).num, writer, searchList.get(i).title);
+				System.out.printf("번호 : %d / 작성자 : %s / 제목 : %s\n", searchList.get(i).num, searchList.get(i).writer, searchList.get(i).title);
 			}
 		}else if(pagePoint > 0 && pagePoint >= inputedId ) {
 			for(int i = startPoint; i > endPoint; i--) {
-				String writer = memberService.getMemberNameByNum(searchList.get(i).memberId);
-				System.out.printf("%d / %s / %s\n", searchList.get(i).num, writer, searchList.get(i).title);
+				System.out.printf("번호 : %d / 작성자 : %s / 제목 : %s\n", searchList.get(i).num, searchList.get(i).writer, searchList.get(i).title);
 			}
 		}
 		
@@ -278,13 +276,10 @@ public class ArticleController extends Controller {
 			return;
 		}
 		
-		
-		
 		Article detailArticle = articleService.getArticleByInput(inputedId);
 		
-		
-		String writer = memberService.getMemberNameByNum(detailArticle.memberId);
-		System.out.printf("번호 : %d\n작성자 : %s\n제목 : %s\n내용 : %s\n", detailArticle.num, writer, detailArticle.title, detailArticle.body);
+		//String writer = memberService.getMemberNameByNum(detailArticle.memberId);
+		System.out.printf("번호 : %d\n작성자 : %s\n제목 : %s\n내용 : %s\n", detailArticle.num, detailArticle.writer, detailArticle.title, detailArticle.body);
 		
 	}
 

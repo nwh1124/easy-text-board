@@ -77,5 +77,9 @@ public class ArticleService {
 	public void getDate() {
 		articleDao.getDate();
 	}
+
+	public void articleInit() {
+		articleDao.articleInit();
+	}
 	
 }

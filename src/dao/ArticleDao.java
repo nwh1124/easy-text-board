@@ -114,8 +114,8 @@ public class ArticleDao {
 	public ArrayList<Article> getArrayListBySearchWord(String searchWord) {
 		ArrayList<Article> search = new ArrayList<>();
 		
-		for(Article article : search) {
-			if(article.title.contains(searchWord) || article.body.contains(searchWord)) {
+		for(Article article : articles) {
+			if(article.title.contains(searchWord) || article.body.contains(searchWord) || article.writer.contains(searchWord) ) {
 				search.add(article);
 			}
 		}
@@ -148,6 +148,10 @@ public class ArticleDao {
 
 	public ArrayList<Article> getExistsArticle() {
 		return articles;
+	}
+
+	public void articleInit() {
+		articles = con.connent();
 	}
 
 }

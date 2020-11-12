@@ -4,7 +4,7 @@ import dao.ArticleDao;
 import dto.Article;
 import Container.Container;
 
-import java.awt.List;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;

@@ -46,6 +46,8 @@ public class App {
 			articleService.add(articleService.iniBoardId(), secondMemberId, "제목" + i , "내용" + i);
 			}			
 */		
+		articleService.articleInit();
+		
 		// 게시판 설정
 		Container.session.selectBoard(articleService.iniBoardId());
 		
