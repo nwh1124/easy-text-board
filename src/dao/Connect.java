@@ -13,18 +13,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Connect {
-	
-	private ArticleDao articleDao;
-	
+		
 	Connection con;
 	ResultSet rs;
 	Statement qu;
 	
 	
 	public ArrayList<Article> connent() {
-		
-		articleDao = Container.articleDao;
-		
+				
 	    try{ 	
 	    	
 	    	int id = 0;
@@ -104,10 +100,6 @@ public class Connect {
 		    			+ "hit = 9"
 		    			); 		    	
 
-		    	con.close();
-		    	qu.close();
-		    	rs.close();
-		    	
 		    	return;
 		    		
 		    }
@@ -116,6 +108,10 @@ public class Connect {
 		    }
 		    catch(SQLException e){
 		        System.out.println("에러: " + e);	        	        
+		    } finally {
+		        try {rs.close();} catch (Exception e) {}
+		        try {qu.close();} catch (Exception e) {}
+		        try {con.close();} catch (Exception e) {}
 		    }
 		
 	}
@@ -140,10 +136,6 @@ public class Connect {
 		    			"delete from article where id = "+inputedId
 		    			);
 		    	
-		    	con.close();
-		    	qu.close();
-		    	rs.close();
-		    	
 		    	return;
 		    		
 		    }
@@ -152,6 +144,10 @@ public class Connect {
 		    }
 		    catch(SQLException e){
 		        System.out.println("에러: " + e);	        	        
+		    }finally {
+		        try {rs.close();} catch (Exception e) {}
+		        try {qu.close();} catch (Exception e) {}
+		        try {con.close();} catch (Exception e) {}
 		    }
 		
 	}
@@ -180,10 +176,6 @@ public class Connect {
 	    			+"where id = "+inputedId
 	    			);
 	    	
-	    	con.close();
-	    	qu.close();
-	    	rs.close();
-	    	
 	    	return;
 	    		
 	    }
@@ -192,8 +184,11 @@ public class Connect {
 	    }
 	    catch(SQLException e){
 	        System.out.println("에러: " + e);	        	        
-	    }
-	
+	    }finally {
+	        try {rs.close();} catch (Exception e) {}
+	        try {qu.close();} catch (Exception e) {}
+	        try {con.close();} catch (Exception e) {}
+	    }	
 		
 	}
 }
