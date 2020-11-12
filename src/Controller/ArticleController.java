@@ -47,11 +47,17 @@ public class ArticleController extends Controller {
 			boardList();			
 		}else if(cmd.startsWith("article curruntBoard")) {			
 			curuuntBoard();			
+		}else if(cmd.equals("article getDate")) {			
+			getDate();			
 		}else {
 			System.out.println("= 잘못된 명령어 입력 =");
 			return;
 		}
 		
+	}
+
+	private void getDate() {
+		articleService.getDate();
 	}
 
 	private void curuuntBoard() {
@@ -188,7 +194,7 @@ public class ArticleController extends Controller {
 			System.out.println("= 수정할 게시물의 번호를 입력해주세요 =");
 			return;
 		}
-		
+/*		
 		if(inputedId <= 0 || inputedId > articleService.getArticleSize()) {
 			System.out.printf("= %d번 게시물은 존재하지 않습니다 =\n", inputedId);
 			return;
@@ -197,7 +203,7 @@ public class ArticleController extends Controller {
 			System.out.printf("= %d번 게시물의 작성자가 아닙니다 =\n", inputedId);
 			return;
 		}
-		
+*/		
 		System.out.println("= 게시물 삭제 =");
 		articleService.delete(inputedId);
 		System.out.printf("= %d번 게시물이 삭제되었습니다 =\n", inputedId);
@@ -228,7 +234,7 @@ public class ArticleController extends Controller {
 			return;
 		}
 		
-		if(inputedId <= 0 || inputedId > articleService.getArticleSize()) {
+/*		if(inputedId <= 0 || inputedId > articleService.getArticleSize()) {
 			System.out.printf("= %d번 게시물은 존재하지 않습니다 =\n", inputedId);
 			return;
 		}
@@ -236,6 +242,7 @@ public class ArticleController extends Controller {
 			System.out.printf("= %d번 게시물의 작성자가 아닙니다 =\n", inputedId);
 			return;
 		}
+*/
 		
 		System.out.println("= 게시물 수정 =");
 
@@ -284,14 +291,14 @@ public class ArticleController extends Controller {
 	private void list(String cmd) {
 		
 		ArrayList<Article> listArticle = articleService.getArrayListListing(Container.session.getSelectedBoardId());
+		String boardName = articleService.getBoardName(Container.session.getSelectedBoardId());
 		
-		if(listArticle.size() == 0) {
-			String boardName = articleService.getBoardName(Container.session.getSelectedBoardId());
+		if(listArticle.size() == 0) {			
 			System.out.printf("= %s 게시판에 등록된 게시물이 없습니다 =\n", boardName);
 			return;
 		}
 		
-		System.out.println("= 게시물 목록 =");
+		System.out.printf("= %s 게시판 게시물 목록 =\n", boardName);
 		
 		int inputedId = 1;
 		String[] cmdBits = cmd.split(" ");
@@ -311,22 +318,22 @@ public class ArticleController extends Controller {
 		int startPoint = (listArticle.size() - 1) - pageGap*(inputedId - 1);
 		int endPoint = startPoint - pageGap;
 		
-		System.out.println("게시판 / 번호 / 작성자 / 제목");
+		System.out.println("번호 /	 날짜	 / 작성자 / 제목 / 조회수");
 		
 		if(pagePoint == 0 || pagePoint+1 == inputedId) {
 			for(int i = startPoint; i >= 0; i--) {
-				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
-				String boardName = articleService.getBoardName(listArticle.get(i).boardId);
-				System.out.printf("%s / %d / %s / %s\n", boardName, listArticle.get(i).num, writer, listArticle.get(i).title);
+				//String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
+				//boardName = articleService.getBoardName(listArticle.get(i).boardId);
+				System.out.printf("%d / %s / %s / %s / %d\n", listArticle.get(i).num, listArticle.get(i).regDate, listArticle.get(i).writer, listArticle.get(i).title, listArticle.get(i).hit);
 			}
 		}else if(pagePoint+1 < inputedId) {
 			System.out.println("= 선택된 페이지가 등록된 게시물보다 큽니다 =");
 			return;			
 		}else {
 			for(int i = startPoint; i > endPoint; i--) {
-				String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
-				String boardName = articleService.getBoardName(listArticle.get(i).boardId);
-				System.out.printf("%s / %d / %s / %s\n", boardName, listArticle.get(i).num, writer, listArticle.get(i).title);
+				//String writer = memberService.getMemberNameByNum(listArticle.get(i).memberId);
+				//boardName = articleService.getBoardName(listArticle.get(i).boardId);
+				System.out.printf("%d / %s / %s / %s / %d\n", listArticle.get(i).num, listArticle.get(i).regDate, listArticle.get(i).writer, listArticle.get(i).title, listArticle.get(i).hit);
 			}
 		}
 				
@@ -346,7 +353,9 @@ public class ArticleController extends Controller {
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 		
-		int id = articleService.add(Container.session.getSelectedBoardId(), Container.session.getNowLoginedId(), title, body);
+		String writer = memberService.getMemberNameByNum(Container.session.getNowLoginedId());
+		
+		int id = articleService.add(Container.session.getSelectedBoardId(), writer, title, body);
 		
 		System.out.printf("= %d번 게시물이 등록되었습니다 =\n", id);
 		

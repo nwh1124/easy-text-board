@@ -38,14 +38,14 @@ public class App {
 		// 게시판 생성
 		Container.articleService.makeBoard("공지사항");
 		
-		// 게시물 생성??
+/*		// 게시물 생성??
 		for(int i = 1; i <= 5; i++) {
 			articleService.add(articleService.iniBoardId(), firstMemberId, "제목" + i , "내용" + i);
 			}
 		for(int i = 1; i <= 5; i++) {
 			articleService.add(articleService.iniBoardId(), secondMemberId, "제목" + i , "내용" + i);
 			}			
-		
+*/		
 		// 게시판 설정
 		Container.session.selectBoard(articleService.iniBoardId());
 		

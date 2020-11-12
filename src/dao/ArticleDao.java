@@ -1,5 +1,7 @@
 package dao;
 
+import dao.Connect;
+import dao.Connect;
 import java.util.ArrayList;
 
 import Container.Container;
@@ -13,6 +15,8 @@ public class ArticleDao {
 	
 	private ArrayList<Board> boards;
 	int lastBoardNum;
+		
+	private Connect con;
 	
 	public ArticleDao(){
 		
@@ -21,6 +25,8 @@ public class ArticleDao {
 		
 		boards = new ArrayList<>();
 		lastBoardNum = 0;
+		
+		con = new Connect();
 		
 	}
 	
@@ -33,10 +39,12 @@ public class ArticleDao {
 		
 	}
 
-	public int add(int selectedBoardId, int nowLoginedId, String title, String body) {
+	public int add(int selectedBoardId, String writer, String title, String body) {
 		
 		lastArticleNum++;
-		articles.add(new Article(selectedBoardId, lastArticleNum, nowLoginedId, title, body));
+		//articles.add(new Article(selectedBoardId, lastArticleNum, nowLoginedId, title, body));
+		
+		con.add(articles, writer, title, body);
 		
 		return lastArticleNum;
 		
@@ -82,8 +90,10 @@ public class ArticleDao {
 
 	public void modify(int inputedId, String modTitle, String modBody) {
 		
-		articles.get(inputedId-1).title = modTitle;
-		articles.get(inputedId-1).body = modBody;
+		con.modify(inputedId, modTitle, modBody);
+		
+//		articles.get(inputedId-1).title = modTitle;
+//		articles.get(inputedId-1).body = modBody;
 				
 	}
 
@@ -97,7 +107,8 @@ public class ArticleDao {
 	}
 
 	public void delete(int inputedId) {
-		articles.remove(inputedId-1);
+		con.delete(inputedId);
+		//articles.remove(inputedId-1);
 	}
 
 	public ArrayList<Article> getArrayListBySearchWord(String searchWord) {
@@ -114,6 +125,7 @@ public class ArticleDao {
 
 	public ArrayList<Article> getArrayListListing(int i) {
 		ArrayList<Article> list = new ArrayList<>();
+		articles = con.connent();
 		for(Article article : articles) {
 			if(article.boardId == i) {
 				list.add(article);
@@ -128,6 +140,14 @@ public class ArticleDao {
 
 	public ArrayList<Board> getBoard() {
 		return boards;
+	}
+
+	public void getDate() {
+		articles = con.connent();
+	}
+
+	public ArrayList<Article> getExistsArticle() {
+		return articles;
 	}
 
 }

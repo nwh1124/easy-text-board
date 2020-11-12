@@ -17,8 +17,8 @@ public class ArticleService {
 		
 	}
 
-	public int add(int selectedBoardId, int nowLoginedId, String title, String body) {
-		return articleDao.add(selectedBoardId, nowLoginedId, title, body);
+	public int add(int selectedBoardId, String writer, String title, String body) {
+		return articleDao.add(selectedBoardId, writer, title, body);
 	}
 
 	public int getArticleSize() {
@@ -72,6 +72,10 @@ public class ArticleService {
 	public int iniBoardId() {
 		ArrayList<Board> board = articleDao.getBoard();
 		return board.get(0).num;
+	}
+
+	public void getDate() {
+		articleDao.getDate();
 	}
 	
 }
