@@ -1,43 +1,34 @@
-package Service;
+package service;
 
-import Container.Container;
-import dao.MemberDao;
 import dto.Member;
+import container.Container;
+import dao.MemberDao;
 
 public class MemberService {
 
 	private MemberDao memberDao;
-
-	public MemberService() {
+	
+	public MemberService () {
 		
 		memberDao = Container.memberDao;
 		
 	}
 
-	public boolean checkIdById(String loginId) {
-		return memberDao.checkIdById(loginId);
+	public Member getMemberByLoginId(String loginId) {
+		return memberDao.getMemberByLoginId(loginId);
 	}
 
 	public int join(String loginId, String loginPw, String name) {
 		return memberDao.join(loginId, loginPw, name);
+		
 	}
 
-	public Member getMemberById(String loginId) {
-		return memberDao.getMemberById(loginId);
+	public Member getMemberById(int loginedId) {
+		return memberDao.getMemberById(loginedId);
 	}
 
-	public Member getMemberByNum(int nowLoginedId) {
-		return memberDao.getMemberByNum(nowLoginedId);
+	public String getMemberNameById(int memberId) {
+		return memberDao.getMemberNameById(memberId);
 	}
 
-	public void modify(int nowId, String modId, String modPw, String modName) {
-		memberDao.modify(nowId, modId, modPw, modName);
-	}
-
-	public String getMemberNameByNum(int num) {
-		return memberDao.getMemberNameByNum(num);
-	}
-	
-	
-	
 }

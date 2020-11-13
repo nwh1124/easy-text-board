@@ -1,43 +1,33 @@
-package Session;
+package session;
 
 public class Session {
-	
-	boolean nowLogined;
-	int nowLoginedId;
-	int selectedBoardId;
+
+	boolean logined;
+	int loginedId;
 	
 	public Session() {
 		
-		nowLogined = false;
-		nowLoginedId = 0;
-		selectedBoardId = 0;
+		logined = false;
+		loginedId = 0;
 		
 	}
-
-	public boolean getNowLogined() {
-		return nowLogined;
+	
+	public void login(int id) {
+		logined = true;
+		loginedId = id;
 	}
 
-	public void login(int num) {
-		nowLogined = true;
-		nowLoginedId = num;		
+	public boolean getLogined() {
+		return logined;
 	}
-
-	public int getNowLoginedId() {
-		return nowLoginedId;
+	
+	public int getLoginedId() {
+		return loginedId;
 	}
 
 	public void logout() {
-		nowLogined = false;
-		nowLoginedId = 0;
-	}
-
-	public int getSelectedBoardId() {
-		return selectedBoardId;
-	}
-
-	public void selectBoard(int inputedId) {
-		selectedBoardId = inputedId;
+		logined = false;
+		loginedId = 0;
 	}
 
 }

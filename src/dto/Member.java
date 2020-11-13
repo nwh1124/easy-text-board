@@ -1,23 +1,30 @@
 package dto;
 
 public class Member {
-	
-	public int num;
+
+	public int id;
 	public String loginId;
 	public String loginPw;
 	public String name;
-	
+
 	public Member() {
 		
 	}
-	
-	public Member(int num, String loginId, String loginPw, String name) {
+
+	public Member(int id, String loginId, String loginPw, String name) {
 		
-		this.num = num;
+		this.id = id;
 		this.loginId = loginId;
 		this.loginPw = loginPw;
 		this.name = name;
 		
 	}
 
+	@Override
+	public String toString() {
+		return "Member [id=" + id + ", loginId=" + loginId + ", loginPw=" + loginPw + ", name=" + name + "]";
+	}
+	
+	
+	
 }

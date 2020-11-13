@@ -1,157 +1,155 @@
 package dao;
 
-import dao.Connect;
-import dao.Connect;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
-import Container.Container;
-import dto.Board;
 import dto.Article;
 
 public class ArticleDao {
-
-	private ArrayList<Article> articles;
-	int lastArticleNum;
 	
-	private ArrayList<Board> boards;
-	int lastBoardNum;
-		
-	private Connect con;
+	List<Article> articles;
 	
-	public ArticleDao(){
+	Connection con;
+	ResultSet rs;
+	PreparedStatement pstmt;
+	
+	String jdbcUrl;
+	String jdbcLoginId;
+	String jdbcLoginPw;
+	
+	public ArticleDao() {
 		
 		articles = new ArrayList<>();
-		lastArticleNum = 0;
 		
-		boards = new ArrayList<>();
-		lastBoardNum = 0;
+		con = null;
+		rs = null;
+		pstmt = null;
 		
-		con = new Connect();
-		
-	}
-	
-	public int makeBoard(String boardName) {
-		
-		lastBoardNum++;
-		boards.add(new Board(lastBoardNum, boardName)); 		
-		
-		return lastBoardNum;
+		jdbcUrl = "jdbc:mysql://127.0.0.1:3306/etb";
+		jdbcLoginId = "sbsst";
+		jdbcLoginPw = "sbs123414";
 		
 	}
 
-	public int add(int selectedBoardId, String writer, String title, String body) {
+	public int add(String title, String body, int loginedId) {
 		
-		lastArticleNum++;
-		//articles.add(new Article(selectedBoardId, lastArticleNum, nowLoginedId, title, body));
-		
-		con.add(articles, writer, title, body);
-		
-		return lastArticleNum;
-		
-	}	
-
-	public String getBoardName(int inputedId) {
-		for(Board board : boards) {
-			if(board.num == inputedId) {
-				return board.name;
-			}
+		try {
+			con = DriverManager.getConnection(jdbcUrl, jdbcLoginId, jdbcLoginPw);
+			
+			String sql = "insert into article set "
+					+ "regDate = now(), updateDate = now(), "
+					+ "title = ?, body = ?, memberId = ?";
+			
+			pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, title);
+			pstmt.setString(2, body);
+			pstmt.setInt(3, loginedId);
+			pstmt.executeUpdate();
+			
+			rs = pstmt.getGeneratedKeys();
+			rs.next();
+			int id = rs.getInt(1);
+			
+			return id;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		return null;
-	}
-	
-	public ArrayList<Board> getArrayListBoard() {
-		return boards;
-	}	
-
-	public int getArticleSize() {
-		return articles.size();
-	}
-	
-	public int getArticleSize(int i) {
-		ArrayList<Article> size = new ArrayList<>();
 		
-		for(Article article : articles) {
-			if(article.boardId == (i+1)) {
-				size.add(article);
-			}
-		}		
-		return size.size();
-	}
-
-
-	public Article getArticleByInput(int inputedId) {
-		for(Article article : articles) {
-			if(article.num == inputedId) {
-				return article;
-			}
-		}
-		return null;
-	}
-
-	public void modify(int inputedId, String modTitle, String modBody) {
-		
-		con.modify(inputedId, modTitle, modBody);
-		
-//		articles.get(inputedId-1).title = modTitle;
-//		articles.get(inputedId-1).body = modBody;
-				
-	}
-
-	public int getArticleMemberIdByInput(int inputedId) {
-		for(Article article : articles) {
-			if(article.num == inputedId) {
-				return article.memberId;
-			}
-		}
 		return 0;
 	}
 
+	public List<Article> getListArticle() {
+
+		try {
+			con = DriverManager.getConnection(jdbcUrl, jdbcLoginId, jdbcLoginPw);
+			
+			String sql = "select * from article";
+			
+			pstmt = con.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			List<Article> article = new ArrayList<>();	
+			
+			while(rs.next()) {
+								
+				int id = rs.getInt("id");
+				String regDate = rs.getString("regDate");
+				String updateDate = rs.getString("updateDate");
+				String title = rs.getString("title");
+				String body = rs.getString("body");
+				int memberId = rs.getInt("memberId");
+				
+				article.add(new Article(id, regDate, updateDate, title, body, memberId));
+				
+			}
+			
+			return article;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public Article getArticle(int inputedId) {
+		
+		try {
+			con = DriverManager.getConnection(jdbcUrl, jdbcLoginId, jdbcLoginPw);
+			
+			String sql = "select * from article where id = ?";
+			
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, inputedId);
+			
+			rs = pstmt.executeQuery();
+			
+			Article article = new Article();	
+			
+			while(rs.next()) {
+								
+				int id = rs.getInt("id");
+				String regDate = rs.getString("regDate");
+				String updateDate = rs.getString("updateDate");
+				String title = rs.getString("title");
+				String body = rs.getString("body");
+				int memberId = rs.getInt("memberId");
+				
+				article = new Article(id, regDate, updateDate, title, body, memberId);
+				
+			}
+			
+			return article;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
 	public void delete(int inputedId) {
-		con.delete(inputedId);
-		//articles.remove(inputedId-1);
-	}
 
-	public ArrayList<Article> getArrayListBySearchWord(String searchWord) {
-		ArrayList<Article> search = new ArrayList<>();
-		
-		for(Article article : articles) {
-			if(article.title.contains(searchWord) || article.body.contains(searchWord) || article.writer.contains(searchWord) ) {
-				search.add(article);
-			}
+		try {
+			con = DriverManager.getConnection(jdbcUrl, jdbcLoginId, jdbcLoginPw);
+			
+			String sql = "delete from article where id = ?";
+			
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, inputedId);			
+			pstmt.executeUpdate();			
+						
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		
-		return search;
-	}
-
-	public ArrayList<Article> getArrayListListing(int i) {
-		ArrayList<Article> list = new ArrayList<>();
-		articles = con.connent();
-		for(Article article : articles) {
-			if(article.boardId == i) {
-				list.add(article);
-			}
-		}
-		return list;
-	}
-
-	public int getBoardSize() {
-		return boards.size();
-	}
-
-	public ArrayList<Board> getBoard() {
-		return boards;
-	}
-
-	public void getDate() {
-		articles = con.connent();
-	}
-
-	public ArrayList<Article> getExistsArticle() {
-		return articles;
-	}
-
-	public void articleInit() {
-		articles = con.connent();
 	}
 
 }

@@ -2,40 +2,26 @@ package dto;
 
 public class Article {
 
-	public int boardId;
-	public int num;
-	public int memberId;
+	public int id;
 	public String regDate;
-	public String writer;
+	public String updateDate;
 	public String title;
 	public String body;
-	public int hit;
+	public int memberId;
 	
 	public Article() {
 		
 	}
 	
-	public Article(int boardId, int num, int memberId, String title, String body) {
+	public Article(int id, String regDate, String updateDate, String title, String body, int memberId) {
 		
-		this.boardId = boardId;
-		this.num = num;
-		this.memberId = memberId;
-		this.title = title;
-		this.body = body;
-		
-	}
-	
-	public Article(int boardId, int num, int memberId, String regDate, String writer, String title, String body, int hit) {
-	
-		this.boardId = boardId;
-		this.num = num;
-		this.memberId = memberId;
+		this.id = id;
 		this.regDate = regDate;
-		this.writer = writer;
+		this.updateDate = updateDate;
 		this.title = title;
 		this.body = body;
-		this.hit = hit;
+		this.memberId = memberId;
 		
 	}
-
+	
 }

@@ -1,85 +1,34 @@
-package Service;
+package service;
 
-import java.util.ArrayList;
-
-import dto.Board;
-import Container.Container;
-import dao.ArticleDao;
+import container.Container;
 import dto.Article;
+import java.util.List;
+import dao.ArticleDao;
 
 public class ArticleService {
 
 	private ArticleDao articleDao;
-
-	public ArticleService(){
+	
+	public ArticleService() {
 		
 		articleDao = Container.articleDao;
 		
 	}
 
-	public int add(int selectedBoardId, String writer, String title, String body) {
-		return articleDao.add(selectedBoardId, writer, title, body);
+	public int add(String title, String body, int loginedId) {
+		return articleDao.add(title, body, loginedId);
 	}
 
-	public int getArticleSize() {
-		return articleDao.getArticleSize();
-	}
-	
-	public int getArticleSize(int i) {
-		return articleDao.getArticleSize(i);
+	public List<Article> getListArticle() {
+		return articleDao.getListArticle();
 	}
 
-	public Article getArticleByInput(int inputedId) {
-		return articleDao.getArticleByInput(inputedId);
-	}
-
-	public void modify(int inputedId, String modTitle, String modBody) {
-		articleDao.modify(inputedId, modTitle, modBody);	
-	}
-
-	public int getArticleMemberIdByInput(int inputedId) {
-		return articleDao.getArticleMemberIdByInput(inputedId);
+	public Article getArticle(int inputedId) {
+		return articleDao.getArticle(inputedId);
 	}
 
 	public void delete(int inputedId) {
-		articleDao.delete(inputedId);
+		articleDao.delete(inputedId);		
 	}
 
-	public ArrayList<Article> getArrayListBySearchWord(String searchWord) {
-		return articleDao.getArrayListBySearchWord(searchWord);
-	}
-
-	public ArrayList<Article> getArrayListListing(int i) {
-		return articleDao.getArrayListListing(i);
-	}
-
-	public int makeBoard(String boardName) {
-		return articleDao.makeBoard(boardName);		
-	}
-	
-	public String getBoardName(int inputedId) {
-		return articleDao.getBoardName(inputedId);
-	}
-
-	public ArrayList<Board> getArrayListBoard() {
-		return articleDao.getArrayListBoard();
-	}
-
-	public int getBoardSize() {
-		return articleDao.getBoardSize();
-	}
-
-	public int iniBoardId() {
-		ArrayList<Board> board = articleDao.getBoard();
-		return board.get(0).num;
-	}
-
-	public void getDate() {
-		articleDao.getDate();
-	}
-
-	public void articleInit() {
-		articleDao.articleInit();
-	}
-	
 }
