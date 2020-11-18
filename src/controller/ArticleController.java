@@ -8,7 +8,7 @@ import dto.Article;
 import service.ArticleService;
 import service.MemberService;
 
-public class ArticleController {
+public class ArticleController extends Controller{
 	
 	Scanner sc;
 	private ArticleService articleService;
@@ -38,6 +38,11 @@ public class ArticleController {
 
 	private void delete(String cmd) {
 		
+		if(Container.session.getLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}		
+		
 		int inputedId = 0;
 		String[] cmdBits = cmd.split(" ");
 		try {
@@ -48,9 +53,14 @@ public class ArticleController {
 			return;
 		}
 		
+		if(Container.session.getLoginedId() != articleService.getArticleWriterId(inputedId)) {
+			System.out.println("= 게시물 작성자가 아닙니다 =");
+			return;
+		}
+		
 		articleService.delete(inputedId);
 		
-		System.out.printf("= %d번 게시물이 삭제되었을껄? =\n", inputedId);
+		System.out.printf("= %d번 게시물이 삭제되었습니다 =\n", inputedId);
 		
 	}
 
@@ -68,11 +78,18 @@ public class ArticleController {
 		
 		Article detailArticle = articleService.getArticle(inputedId);
 		
-		System.out.println("= 게시물 상세 =");
+		System.out.println("== 게시물 상세 ==");
 		
+		String boardName = articleService.getBoardNameById(detailArticle.boardId);
 		String writer = memberService.getMemberNameById(detailArticle.memberId);
-		System.out.printf("번호 : %d\n작성일 : %s\n제목 : %s\n내용 : %s\n작성자 : %s\n", 
-				detailArticle.id, detailArticle.regDate, detailArticle.title, detailArticle.body, writer);
+		System.out.printf("게시판 : %s\n", boardName);
+		System.out.printf("번호 : %d\n", detailArticle.id);
+		System.out.printf("작성일 : %s\n", detailArticle.regDate);
+		System.out.printf("수정일 : %s\n", detailArticle.updateDate);
+		System.out.printf("제목 : %s\n", detailArticle.title);
+		System.out.printf("내용 : %s\n", detailArticle.body);
+		System.out.printf("작성자 : %s\n", writer);
+		System.out.printf("조회수 : %d\n", detailArticle.hit);
 		
 	}
 
@@ -85,8 +102,16 @@ public class ArticleController {
 		System.out.println("번호 / 작성일 / 작성자 / 제목");
 		
 		for(Article article : listArticle) {
+			
+			String boardName = articleService.getBoardNameById(article.boardId);
 			String writer = memberService.getMemberNameById(article.memberId);
-			System.out.printf("%d / %s / %s / %s\n", article.id, article.regDate, writer, article.title);
+
+			System.out.printf("%s /", boardName);
+			System.out.printf(" %d /", article.id);
+			System.out.printf(" %s /", article.regDate);
+			System.out.printf(" %s /", writer);
+			System.out.printf(" %s \n", article.title);
+			
 		}
 		
 	}
@@ -126,7 +151,7 @@ public class ArticleController {
 		System.out.printf("내용 : ");
 		body = sc.nextLine();
 		
-		int id = articleService.add(title, body, Container.session.getLoginedId());
+		int id = articleService.add(title, body, Container.session.getLoginedId(), Container.session.getSelectedBoardId());
 		
 		System.out.printf("= %d번 게시물이 작성되었습니다! =\n", id);
 		

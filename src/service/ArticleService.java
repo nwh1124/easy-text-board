@@ -15,8 +15,8 @@ public class ArticleService {
 		
 	}
 
-	public int add(String title, String body, int loginedId) {
-		return articleDao.add(title, body, loginedId);
+	public int add(String title, String body, int loginedId, int selectedBoardId) {
+		return articleDao.add(title, body, loginedId, selectedBoardId);
 	}
 
 	public List<Article> getListArticle() {
@@ -29,6 +29,14 @@ public class ArticleService {
 
 	public void delete(int inputedId) {
 		articleDao.delete(inputedId);		
+	}
+
+	public int getArticleWriterId(int inputedId) {
+		return articleDao.getArticleWriterId(inputedId);
+	}
+
+	public String getBoardNameById(int boardId) {
+		return articleDao.getBoardNameById(boardId);
 	}
 
 }

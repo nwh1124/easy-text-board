@@ -6,7 +6,7 @@ import container.Container;
 import dto.Member;
 import service.MemberService;
 
-public class MemberController {
+public class MemberController extends Controller{
 
 	Scanner sc;
 	private MemberService memberService;
@@ -33,6 +33,7 @@ public class MemberController {
 	}
 
 	private void whoami() {
+		
 		if(Container.session.getLogined() == false) {
 			System.out.println("= 비회원입니다 =");
 			return;
@@ -40,13 +41,21 @@ public class MemberController {
 		
 		System.out.println("= 회원 상세 정보 =");
 				
-		Member whoamiMember = memberService.getMemberById(Container.session.getLoginedId());
+		Member member = memberService.getMemberById(Container.session.getLoginedId());
 		
-		System.out.printf("회원 번호 : %d\n회원 아이디 : %s\n회원 이름 : %s\n", whoamiMember.id, whoamiMember.loginId, whoamiMember.name);
+		System.out.printf("회원 번호 : %d\n회원 아이디 : %s\n회원 이름 : %s\n", member.id, member.loginId, member.name);
 		
 	}
 
 	private void logout() {
+		
+		if(Container.session.getLogined() == false) {
+			System.out.println("= 로그인 중이 아닙니다 =");
+			return;
+		}
+		
+		System.out.println("== 로그아웃 ==");
+		
 		if(Container.session.getLogined() == false) {
 			System.out.println("= 로그인 후 이용해주세요 =");
 			return;
@@ -59,8 +68,9 @@ public class MemberController {
 	}
 
 	private void login() {
+		
 		if(Container.session.getLogined()) {
-			System.out.println("= 로그인 중입니다 =");
+			System.out.println("= 이미 로그인 중입니다 =");
 			return;
 		}
 		
@@ -126,6 +136,7 @@ public class MemberController {
 	}
 
 	private void join() {
+		
 		if(Container.session.getLogined()) {
 			System.out.println("= 로그아웃 후 이용해주세요 =");
 			return;
@@ -137,12 +148,12 @@ public class MemberController {
 		String name;
 		Member loginMember;
 			
-		System.out.println("= 회원 가입 =");
+		System.out.println("== 회원 가입 ==");
 		
 		int missCount = 0;
 		while( true ) { 
 			if(missCount >= missCountMax) {
-				System.out.println("= 취소 =");
+				System.out.println("= 회원 가입 취소 =");
 				return;
 			}
 			
@@ -186,7 +197,7 @@ public class MemberController {
 		missCount = 0;
 		while( true ) { 
 			if(missCount >= missCountMax) {
-				System.out.println("= 취소 =");
+				System.out.println("= 회원 가입 취소 =");
 				return;
 			}
 			
