@@ -19,8 +19,7 @@ public class App {
 		
 		sc = Container.sc;
 		memberController = Container.memberController;
-		articleController = Container.articleController;
-		
+		articleController = Container.articleController;		
 		cmdToExit = false;
 	}
 	

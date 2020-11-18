@@ -36,4 +36,8 @@ public class Session {
 		return selectedBoardId;
 	}
 
+	public void selectBoard(int inputedId) {
+		selectedBoardId = inputedId;
+	}
+
 }
