@@ -277,12 +277,12 @@ public class ArticleController extends Controller{
 		for(Article article : listArticle) {
 			
 			String boardName = articleService.getBoardNameById(article.boardId);
-			String writer = memberService.getMemberNameById(article.memberId);
+			//String writer = memberService.getMemberNameById(article.memberId);
 
 			System.out.printf("%s /", boardName);
 			System.out.printf(" %d /", article.id);
 			System.out.printf(" %s /", article.regDate);
-			System.out.printf(" %s /", writer);
+			System.out.printf(" %s /", article.extra__writer);
 			System.out.printf(" %s \n", article.title);
 			
 		}

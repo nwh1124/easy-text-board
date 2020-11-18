@@ -22,10 +22,6 @@ public class ArticleService {
 		return articleDao.add(title, body, loginedId, selectedBoardId);
 	}
 
-	public List<Article> getListArticle() {
-		return articleDao.getListArticle();
-	}
-
 	public Article getArticle(int inputedId) {
 		return articleDao.getArticle(inputedId);
 	}
@@ -60,6 +56,14 @@ public class ArticleService {
 
 	public Board getBoardById(int inputedId) {
 		return articleDao.getBoardById(inputedId); 
+	}
+
+	public List<Article> getListArticle(int selectedBoardId) {
+		return articleDao.getListArticle(selectedBoardId);
+	}
+	
+	public List<Article> getListArticle() {
+		return articleDao.getListArticle();
 	}
 
 }

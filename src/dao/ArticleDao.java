@@ -40,8 +40,10 @@ public class ArticleDao {
 		
 		SecSql sql = new SecSql();
 		
-		sql.append("SELECT *");
+		sql.append("SELECT article.*, `member`.name AS extra__writer");
 		sql.append("FROM article");
+		sql.append("Inner Join `member`");
+		sql.append("On article.memberId = `member`.id");
 		
 		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);
 		
@@ -53,6 +55,26 @@ public class ArticleDao {
 		
 		return articles;
 
+	}
+
+	public List<Article> getListArticle(int selectedBoardId) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT * ");
+		sql.append("FROM article ");
+		sql.append("WHERE boardId = ?", selectedBoardId);
+		
+		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);
+		
+		List<Article> articles = new ArrayList<>();
+		
+		for(Map<String, Object> map : articleListMap) {
+			articles.add(new Article(map));
+		}
+		
+		return articles;
+		
 	}
 
 	public Article getArticle(int inputedId) {
@@ -188,5 +210,6 @@ public class ArticleDao {
 		
 		return board;
 	}
+
 
 }
