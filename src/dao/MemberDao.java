@@ -21,6 +21,10 @@ public class MemberDao {
 		
 		Map<String, Object> map = MysqlUtil.selectRow(sql);
 		
+		if(map.size() == 0) {
+			return null;
+		}
+		
 		Member member = new Member(map);
 		
 		return member;
@@ -71,6 +75,20 @@ public class MemberDao {
 		String name = MysqlUtil.selectRowStringValue(sql);
 		
 		return name;
+		
+	}
+
+	public void modify(String modId, String modPw, String modName, int loginedId) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("UPDATE `member`");
+		sql.append("SET loginId = ?", modId);
+		sql.append(", loginPw = ?", modPw);
+		sql.append(", `name` = ?", modName);
+		sql.append("WHERE id = ?", loginedId);
+		
+		MysqlUtil.update(sql);
 		
 	}
 

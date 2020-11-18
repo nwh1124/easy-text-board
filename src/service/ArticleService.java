@@ -66,4 +66,24 @@ public class ArticleService {
 		return articleDao.getListArticle();
 	}
 
+	public List<Article> getSearchArticles(String searchWord) {
+		return articleDao.getSearchArticles(searchWord);
+	}
+
+	public List<Reply> getReplysByMemberId(int loginedId) {
+		return articleDao.getReplysByMemberId(loginedId);
+	}
+
+	public Reply getReplysById(int modCmd) {
+		return articleDao.getReplysById(modCmd);
+	}
+
+	public void modReply(int modRepCmd, String modRepBody) {
+		articleDao.modReply(modRepCmd, modRepBody);
+	}
+
+	public void delReply(int modRepCmd) {
+		articleDao.delReply(modRepCmd);
+	}
+
 }

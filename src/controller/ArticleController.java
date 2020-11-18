@@ -36,8 +36,16 @@ public class ArticleController extends Controller{
 			delete(cmd);
 		}else if(cmd.startsWith("article modify")) {
 			modify(cmd);
+		}else if(cmd.startsWith("article search")) {
+			search(cmd);
 		}else if(cmd.startsWith("article writeReply")) {
 			writeReply(cmd);
+		}else if(cmd.startsWith("article modReply")) {
+			modReply(cmd);
+		}else if(cmd.startsWith("article delReply")) {
+			delReply(cmd);
+		}else if(cmd.startsWith("article myReply")) {
+			myReply(cmd);
 		}else if(cmd.equals("article makeBoard")) {
 			makeBoard();
 		}else if(cmd.startsWith("article selectBoard")) {
@@ -138,10 +146,199 @@ public class ArticleController extends Controller{
 			return;
 		}
 		
-		System.out.printf("== %d번 게시물에 댓글 쓰기 ==", inputedId);		
+		System.out.printf(" 댓글 작성 : ");		
 		String body = sc.nextLine();
 		
 		articleService.writeReply(body, Container.session.getLoginedId(), inputedId);
+		
+	}
+	
+	private void modReply(String cmd) {
+		
+		if(Container.session.getLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}	
+
+		System.out.println("== 댓글 수정 ==");
+		
+		List<Reply> replys = articleService.getReplysByMemberId(Container.session.getLoginedId());
+		
+		if(replys == null) {
+			System.out.println("= 작성한 댓글이 없습니다 =");
+			return;
+		}
+		
+		System.out.println("= 작성한 댓글 목록 =");
+		System.out.println("번호 / 작성일 / 내용 / 원본 게시물");
+		
+		for(Reply reply : replys) {
+			System.out.printf("%d / %s / %s / %s\n", reply.id, reply.regDate, reply.body, reply.extra__title);
+		}
+		
+		int missCountMax = 3;
+		int missCount = 0;
+		int modRepCmd = 0;
+		
+		while(true) {
+			if(missCount >= missCountMax) {
+				System.out.println("= 댓글 수정 취소 =");
+				return;
+			}
+			
+			System.out.printf("수정할 댓글 번호 : ");
+			modRepCmd = Integer.parseInt(sc.nextLine());
+			
+			Reply reply = articleService.getReplysById(modRepCmd);
+			
+			if(modRepCmd == 0) {
+				System.out.println("= 수정할 댓글 번호를 입력해주세요 =");
+				missCount++;
+				continue;
+			}else if(reply == null) {
+				System.out.println("= 존재하지 않는 댓글입니다 =");
+				missCount++;
+				continue;
+			}else if(reply.memberId != Container.session.getLoginedId()) {
+				System.out.println("= 댓글 작성자가 아닙니다 =");
+				missCount++;
+				continue;
+			}else {
+				break;
+			}
+		}
+			
+		System.out.printf("수정할 내용 : ");
+		String modRepBody = sc.nextLine();
+		
+		articleService.modReply(modRepCmd, modRepBody);
+		System.out.println("= 댓글이 수정되었습니다 =");
+		
+	}
+	
+	private void delReply(String cmd) {
+
+		if(Container.session.getLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}	
+
+		System.out.println("== 댓글 삭제 ==");
+		
+		List<Reply> replys = articleService.getReplysByMemberId(Container.session.getLoginedId());
+		
+		if(replys == null) {
+			System.out.println("= 작성한 댓글이 없습니다 =");
+			return;
+		}
+		
+		System.out.println("= 작성한 댓글 목록 =");
+		System.out.println("번호 / 작성일 / 내용 / 원본 게시물");
+		
+		for(Reply reply : replys) {
+			System.out.printf("%d / %s / %s / %s\n", reply.id, reply.regDate, reply.body, reply.extra__title);
+		}
+		
+		int missCountMax = 3;
+		int missCount = 0;
+		int modRepCmd = 0;
+		
+		while(true) {
+			if(missCount >= missCountMax) {
+				System.out.println("= 댓글 삭제 취소 =");
+				return;
+			}
+			
+			System.out.printf("삭제할 댓글 번호 : ");
+			modRepCmd = Integer.parseInt(sc.nextLine());
+			
+			Reply reply = articleService.getReplysById(modRepCmd);
+			
+			if(modRepCmd == 0) {
+				System.out.println("= 삭제할 댓글 번호를 입력해주세요 =");
+				missCount++;
+				continue;
+			}else if(reply == null) {
+				System.out.println("= 존재하지 않는 댓글입니다 =");
+				missCount++;
+				continue;
+			}else if(reply.memberId != Container.session.getLoginedId()) {
+				System.out.println("= 댓글 작성자가 아닙니다 =");
+				missCount++;
+				continue;
+			}else {
+				break;
+			}
+		}
+		
+		articleService.delReply(modRepCmd);
+		System.out.println("= 댓글이 삭제되었습니다 =");
+		
+	}
+	
+	private void myReply(String cmd) {
+
+		System.out.println("== 작성한 댓글 목록 ==");
+		
+		if(Container.session.getLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}	
+		
+		List<Reply> replys = articleService.getReplysByMemberId(Container.session.getLoginedId());
+		
+		if(replys == null) {
+			System.out.println("= 작성한 댓글이 없습니다 =");
+			return;
+		}
+		
+		System.out.println("번호 / 작성일 / 내용 / 원본 게시물");
+		
+		for(Reply reply : replys) {
+			System.out.printf("%d / %s / %s / %s\n", reply.id, reply.regDate, reply.body, reply.extra__title);
+		}
+		
+	}
+	
+	private void search(String cmd) {
+		
+		System.out.println("== 게시물 검색 ==");
+		
+		int inputedId = 0;
+		String searchWord = "";
+		String[] cmdBits = cmd.split(" ");
+		
+		if(cmdBits.length > 2) {
+			searchWord = cmdBits[2];
+		}else {
+			System.out.println("= 검색어를 입력해주세요 =");
+			return;
+		}
+		
+		if(cmdBits.length > 3) {
+			try {			
+				inputedId = Integer.parseInt(cmdBits[3]);
+			}
+			catch(Exception e) {
+				System.out.println("= 게시물 번호를 정수로 입력해주세요 =");
+				return;
+			}
+		}
+		
+		List<Article> articles = articleService.getSearchArticles(searchWord);
+		
+		for(Article article : articles) {
+			
+			String boardName = articleService.getBoardNameById(article.boardId);
+			String writer = memberService.getMemberNameById(article.memberId);
+
+			System.out.printf("%s /", boardName);
+			System.out.printf(" %d /", article.id);
+			System.out.printf(" %s /", article.regDate);
+			System.out.printf(" %s /", writer);
+			System.out.printf(" %s \n", article.title);
+			
+		}
 		
 	}
 
@@ -242,6 +439,11 @@ public class ArticleController extends Controller{
 		
 		Article detailArticle = articleService.getArticle(inputedId);
 		
+		if(detailArticle == null) {
+			System.out.printf("= %d번 게시물은 존재하지 않습니다 =\n", inputedId);
+			return;
+		}
+		
 		System.out.println("== 게시물 상세 ==");
 		
 		String boardName = articleService.getBoardNameById(detailArticle.boardId);
@@ -258,6 +460,11 @@ public class ArticleController extends Controller{
 		System.out.println("== 댓글 작성자 / 댓글 내용 ==");
 		
 		List<Reply> replys = articleService.getReplysByArticleId(inputedId);
+		
+		if(replys == null) {
+			System.out.println("= 등록된 댓글이 없습니다 =");
+			return;
+		}
 			
 		for(Reply reply : replys) {					
 			writer = memberService.getMemberNameById(reply.memberId);
@@ -276,10 +483,10 @@ public class ArticleController extends Controller{
 		
 		for(Article article : listArticle) {
 			
-			String boardName = articleService.getBoardNameById(article.boardId);
+			//String boardName = articleService.getBoardNameById(article.boardId);
 			//String writer = memberService.getMemberNameById(article.memberId);
 
-			System.out.printf("%s /", boardName);
+			System.out.printf("%s /", article.extra__boardName);
 			System.out.printf(" %d /", article.id);
 			System.out.printf(" %s /", article.regDate);
 			System.out.printf(" %s /", article.extra__writer);

@@ -30,4 +30,8 @@ public class MemberService {
 		return memberDao.getMemberNameById(memberId);
 	}
 
+	public void modify(String modId, String modPw, String modName, int loginedId) {
+		memberDao.modify(modId, modPw, modName, loginedId);
+	}
+
 }

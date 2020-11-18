@@ -40,10 +40,10 @@ public class ArticleDao {
 		
 		SecSql sql = new SecSql();
 		
-		sql.append("SELECT article.*, `member`.name AS extra__writer");
+		sql.append("SELECT article.*, `member`.name AS extra__writer, board.name AS extra__boardName");
 		sql.append("FROM article");
-		sql.append("Inner Join `member`");
-		sql.append("On article.memberId = `member`.id");
+		sql.append("Inner Join `member`, board");
+		sql.append("WHERE article.memberId = `member`.id AND article.boardId = board.id");
 		
 		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);
 		
@@ -86,6 +86,10 @@ public class ArticleDao {
 		sql.append("WHERE id = ?", inputedId);
 		
 		Map<String, Object> map = MysqlUtil.selectRow(sql);
+		
+		if(map.size() == 0) {
+			return null;
+		}
 		
 		Article article = new Article(map);
 		
@@ -141,6 +145,28 @@ public class ArticleDao {
 		MysqlUtil.update(sql);
 		
 	}
+	
+	public List<Article> getSearchArticles(String searchWord) {
+		
+		searchWord = "%"+searchWord+"%";
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT *");
+		sql.append("FROM article");
+		sql.append("WHERE title like ?", searchWord);
+		sql.append("OR body like ?", searchWord);
+		
+		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);
+		
+		List<Article> articles = new ArrayList<>();
+		
+		for(Map<String, Object> article : articleListMap) {
+			articles.add(new Article(article));
+		}
+		
+		return articles;
+	}
 
 	public void writeReply(String body, int loginedId, int inputedId) {
 
@@ -162,7 +188,7 @@ public class ArticleDao {
 		
 		sql.append("SELECT * ");
 		sql.append("FROM reply");
-		sql.append("WHERE id = ?", inputedId);
+		sql.append("WHERE articleId = ?", inputedId);
 		
 		List<Map<String, Object>> replyListMap = MysqlUtil.selectRows(sql);
 		
@@ -211,5 +237,71 @@ public class ArticleDao {
 		return board;
 	}
 
+	public List<Reply> getReplysByMemberId(int loginedId) {
+
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT reply.*, article.title AS extra__title");
+		sql.append("FROM reply ");
+		sql.append("INNER JOIN article");
+		sql.append("ON reply.articleId = article.id");
+		sql.append("WHERE reply.memberId = ?", loginedId);
+		
+		List<Map<String, Object>> replysListMap = MysqlUtil.selectRows(sql);
+		
+		if(replysListMap.size() == 0) {
+			return null;
+		}
+		
+		List<Reply> replys = new ArrayList<>();
+		
+		for(Map<String, Object> map : replysListMap) {
+			replys.add(new Reply(map));
+		}
+		
+		return replys;
+	}
+
+	public Reply getReplysById(int modCmd) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT * ");
+		sql.append("FROM reply ");
+		sql.append("WHERE id = ?", modCmd);
+		
+		Map<String, Object> map = MysqlUtil.selectRow(sql);
+		
+		if(map == null) {
+			return null;
+		}
+		
+		Reply reply = new Reply(map);
+		
+		return reply;
+	}
+
+	public void modReply(int modRepCmd, String modRepBody) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("UPDATE reply");
+		sql.append("SET `body` = ?", modRepBody);
+		sql.append("WHERE id = ?", modRepCmd);
+		
+		MysqlUtil.update(sql);
+		
+	}
+
+	public void delReply(int modRepCmd) {
+
+		SecSql sql = new SecSql();
+		
+		sql.append("DELETE FROM reply");
+		sql.append("WHERE id = ?", modRepCmd);
+		
+		MysqlUtil.delete(sql);
+		
+	}
 
 }
