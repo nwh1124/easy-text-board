@@ -51,8 +51,8 @@ public class ArticleService {
 		return articleDao.getReplysByArticleId(inputedId);
 	}
 
-	public int makeBoard(String boardName) {
-		return articleDao.makeBoard(boardName);
+	public int makeBoard(String code, String boardName) {
+		return articleDao.makeBoard(code, boardName);
 	}
 
 	public Board getBoardById(int inputedId) {
@@ -105,6 +105,18 @@ public class ArticleService {
 
 	public List<Board> getBoards() {
 		return articleDao.getBoards();
+	}
+
+	public boolean isBoardNameAvailable(String boardName) {
+		return articleDao.isBoardNameAvailable(boardName);
+	}
+
+	public boolean isCodeAvailable(String code) {
+		return articleDao.isCodeAvailable(code);
+	}
+
+	public int getBoardsCnt(int id) {
+		return articleDao.getBoardsCnt(id);
 	}
 
 }

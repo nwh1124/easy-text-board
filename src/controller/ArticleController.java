@@ -51,7 +51,7 @@ public class ArticleController extends Controller{
 		}else if(cmd.equals("article makeBoard")) {
 			makeBoard();
 		}else if(cmd.startsWith("article selectBoard")) {
-			selectBoard(cmd);
+			selectBoard();
 		}else if(cmd.startsWith("article curruntBoard")) {
 			curruntBoard();
 		}else if(cmd.startsWith("article recommand")) {
@@ -153,29 +153,38 @@ public class ArticleController extends Controller{
 		
 	}
 
-	private void selectBoard(String cmd) {
+	private void selectBoard() {
 		
 		System.out.println("== 게시판 선택 ==");
 		
+		List<Board> boards = articleService.getBoards();
+		
+		
+		System.out.println("번호 / 작성일 / 코드 / 이름 / 게시물 수");
+		
+		for(Board board : boards) {
+			int cntBoard = articleService.getBoardsCnt(board.id);
+			System.out.printf("%d / %s / %s / %s / %d\n", board.id, board.regDate, board.code, board.name, cntBoard);
+		}
+		
+		System.out.printf("번호 : ");
+		String cmd = sc.nextLine();
+		
 		int inputedId = 0;
-		String[] cmdBits = cmd.split(" ");
 		try {
-			inputedId = Integer.parseInt(cmdBits[2]);
+			inputedId = Integer.parseInt(cmd);
 		}
 		catch(Exception e) {
 			System.out.println("= 게시판 번호를 정수로 입력해주세요 =");
 			return;
 		}
-		
-		Board board = articleService.getBoardById(inputedId);
-		
-		if(board == null) {
-			System.out.println("= 존재하지 않는 게시판입니다 =");
+		if(boards.get(inputedId-1) == null) {
+			System.out.printf("= %s번 게시판은 존재하지 않습니다 =\n", cmd);
 			return;
 		}
 		
 		Container.session.selectBoard(inputedId);
-		System.out.printf("= %s(%d번) 게시판이 선택되었습니다 =\n", board.name, board.id);
+		System.out.printf("= %s(%d번) 게시판이 선택되었습니다 =\n", boards.get(inputedId-1).name, boards.get(inputedId-1).id);
 		
 	}
 
@@ -197,6 +206,7 @@ public class ArticleController extends Controller{
 		int missCount = 0;
 				
 		String boardName;
+		String code;
 		
 		while(true) {
 			if(missCount >= missCountMax) {
@@ -207,21 +217,46 @@ public class ArticleController extends Controller{
 			System.out.printf("게시판 이름 : ");
 			boardName = sc.nextLine();
 			
-			List<Board> boards = articleService.getBoards();
 			if(boardName.trim().length() == 0) {
 				System.out.println("= 게시판 이름을 입력해주세요 =");
 				missCount++;
 				continue;
-			}else if() {
+			}else if(articleService.isBoardNameAvailable(boardName)) {
 				System.out.println("= 이미 존재하는 게시판입니다 =");
 				missCount++;
 				continue;
-			}else {
+			}
+			else {
 				break;
 			}
 		}
 		
-		int id = articleService.makeBoard(boardName);
+		missCount = 0;
+		
+		while(true) {
+			if(missCount >= missCountMax) {
+				System.out.println("= 게시판 생성 취소 =");
+				return;
+			}
+			
+			System.out.printf("게시판 코드 : ");
+			code = sc.nextLine();
+			
+			if(code.trim().length() == 0) {
+				System.out.println("= 코드를 입력해주세요 =");
+				missCount++;
+				continue;
+			}else if(articleService.isCodeAvailable(code)) {
+				System.out.println("= 이미 존재하는 코드입니다 =");
+				missCount++;
+				continue;
+			}
+			else {
+				break;
+			}
+		}
+		
+		int id = articleService.makeBoard(code, boardName);
 		System.out.printf("= %s(%d번) 게시판이 생성되었습니다 =\n", boardName, id);
 		
 	}

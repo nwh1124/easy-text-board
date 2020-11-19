@@ -9,6 +9,7 @@ public class Board {
 	public String updateDate;
 	public String code;
 	public String name;
+	public int cnt;
 	
 	public Board() {
 		
@@ -21,6 +22,9 @@ public class Board {
 		this.updateDate = (String)map.get("updateDate");
 		this.code = (String)map.get("code");
 		this.name = (String)map.get("name");
+		if(map.containsKey("cnt")) {
+			this.cnt = (int)map.get("cnt");
+		}
 		
 	}
 

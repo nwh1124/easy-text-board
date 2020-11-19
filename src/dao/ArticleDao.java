@@ -209,13 +209,14 @@ public class ArticleDao {
 		return replys;
 	}
 
-	public int makeBoard(String boardName) {
+	public int makeBoard(String code, String boardName) {
 		
 		SecSql sql = new SecSql();
 		
 		sql.append("INSERT INTO board ");
 		sql.append("SET regDate = NOW() ");
 		sql.append(", updateDate = NOW()");
+		sql.append(", code = ?", code);
 		sql.append(", name = ?", boardName);
 		
 		int id = MysqlUtil.insert(sql);
@@ -400,6 +401,50 @@ public class ArticleDao {
 		
 		return boards;
 		
+	}
+
+	public boolean isBoardNameAvailable(String boardName) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT name");
+		sql.append("FROM board");
+		sql.append("WHERE name = ?", boardName);
+		
+		String name = MysqlUtil.selectRowStringValue(sql);
+		
+		if (name.length() == 0) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	public boolean isCodeAvailable(String code) {
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT name");
+		sql.append("FROM board");
+		sql.append("WHERE code = ?", code);
+		
+		String getCode = MysqlUtil.selectRowStringValue(sql);
+		
+		if (getCode.length() == 0) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	public int getBoardsCnt(int id) {
+
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT COUNT(*)");
+		sql.append("FROM article");
+		sql.append("WHERE boardId = ?", id);
+		
+		return MysqlUtil.selectRowIntValue(sql);
 	}
 
 }
