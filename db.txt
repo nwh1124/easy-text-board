@@ -29,6 +29,7 @@ CREATE TABLE board(
 id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
 regDate DATETIME NOT NULL,
 updateDate DATETIME NOT NULL,
+`code`  VARCHAR(100) NOT NULL,
 `name` VARCHAR(100) NOT NULL
 );
 
@@ -66,6 +67,13 @@ updateDate = NOW(),
 loginId = 'bbb',
 loginPw = 'bbb',
 `name` = '유저1';
+
+INSERT `member`
+SET regDate = NOW(),
+updateDate = NOW(),
+loginId = 'bbb',
+loginPw = 'bbb',
+`name` = '유저2';
 
 INSERT article
 SET regDate = NOW(),

@@ -206,8 +206,14 @@ public class ArticleController extends Controller{
 			
 			System.out.printf("게시판 이름 : ");
 			boardName = sc.nextLine();
+			
+			List<Board> boards = articleService.getBoards();
 			if(boardName.trim().length() == 0) {
 				System.out.println("= 게시판 이름을 입력해주세요 =");
+				missCount++;
+				continue;
+			}else if() {
+				System.out.println("= 이미 존재하는 게시판입니다 =");
 				missCount++;
 				continue;
 			}else {

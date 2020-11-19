@@ -7,6 +7,7 @@ public class Board {
 	public int id;
 	public String regDate;
 	public String updateDate;
+	public String code;
 	public String name;
 	
 	public Board() {
@@ -18,6 +19,7 @@ public class Board {
 		this.id = (int)map.get("id");
 		this.regDate = (String)map.get("regDate");
 		this.updateDate = (String)map.get("updateDate");
+		this.code = (String)map.get("code");
 		this.name = (String)map.get("name");
 		
 	}

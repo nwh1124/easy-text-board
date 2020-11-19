@@ -103,4 +103,8 @@ public class ArticleService {
 		articleDao.doHitPlus(inputedId);
 	}
 
+	public List<Board> getBoards() {
+		return articleDao.getBoards();
+	}
+
 }
