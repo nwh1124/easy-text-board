@@ -29,8 +29,8 @@ public class ArticleController extends Controller{
 		
 		if(cmd.equals("article add")) {
 			add();
-		}else if(cmd.equals("article list")) {
-			list();
+		}else if(cmd.startsWith("article list")) {
+			list(cmd);
 		}else if(cmd.startsWith("article detail")) {
 			detail(cmd);
 		}else if(cmd.startsWith("article delete")) {
@@ -390,7 +390,7 @@ public class ArticleController extends Controller{
 		
 		System.out.println("== 게시물 검색 ==");
 		
-		int inputedId = 0;
+		int inputedId = 1;
 		String searchWord = "";
 		String[] cmdBits = cmd.split(" ");
 		
@@ -406,13 +406,49 @@ public class ArticleController extends Controller{
 				inputedId = Integer.parseInt(cmdBits[3]);
 			}
 			catch(Exception e) {
-				System.out.println("= 게시물 번호를 정수로 입력해주세요 =");
+				System.out.println("= 페이지 번호를 정수로 입력해주세요 =");
 				return;
 			}
 		}
 		
 		List<Article> articles = articleService.getSearchArticles(searchWord);
 		
+		int pageGap = 5;
+		int pagePoint = articles.size() / pageGap;
+		int startPoint = (articles.size() - 1) - (pageGap*(inputedId - 1));
+		int endPoint = startPoint - pageGap;
+		
+		if(pagePoint < 0 || pagePoint + 1 < inputedId || inputedId <= 0){
+			System.out.printf("= %d번 페이지는 존재하지 않습니다 =\n", inputedId);
+			return;
+		}
+		
+		System.out.println("게시판 / 번호 / 작성일 / 작성자 / 제목 / 조회수");
+		
+		if(pagePoint == 0 || pagePoint + 1 == inputedId) {
+			for(int i = startPoint ; i >= 0 ; i--) {	
+				String boardName = articleService.getBoardNameById(articles.get(i).boardId);
+				String writer = memberService.getMemberNameById(articles.get(i).memberId);
+				System.out.printf("%s 게시판 /", boardName);
+				System.out.printf(" %d /", articles.get(i).id);
+				System.out.printf(" %s /", articles.get(i).regDate);
+				System.out.printf(" %s /", writer);
+				System.out.printf(" %s /", articles.get(i).title);
+				System.out.printf(" %d \n", articles.get(i).hit);				
+			}
+		}else if(pagePoint > 0 && pagePoint + 1 >= inputedId) {
+			for(int i = startPoint ; i > endPoint ; i--) {	
+				String boardName = articleService.getBoardNameById(articles.get(i).boardId);
+				String writer = memberService.getMemberNameById(articles.get(i).memberId);
+				System.out.printf("%s 게시판 /", boardName);
+				System.out.printf(" %d /", articles.get(i).id);
+				System.out.printf(" %s /", articles.get(i).regDate);
+				System.out.printf(" %s /", writer);
+				System.out.printf(" %s /", articles.get(i).title);
+				System.out.printf(" %d \n", articles.get(i).hit);				
+			}
+		}
+/*		
 		for(Article article : articles) {
 			
 			String boardName = articleService.getBoardNameById(article.boardId);
@@ -425,7 +461,7 @@ public class ArticleController extends Controller{
 			System.out.printf(" %s \n", article.title);
 			
 		}
-		
+*/		
 	}
 
 	private void modify(String cmd) {
@@ -562,15 +598,55 @@ public class ArticleController extends Controller{
 		
 	}
 
-	private void list() {
-		
-		List<Article> listArticle = articleService.getListArticle(Container.session.getSelectedBoardId());
+	private void list(String cmd) {
 		
 		System.out.println("= 게시물 목록 =");
 		
+		List<Article> listArticle = articleService.getListArticle(Container.session.getSelectedBoardId());
+		
+		int inputedId = 1;
+		String[] cmdBits = cmd.split(" ");
+		try {
+			if(cmdBits.length > 2) inputedId = Integer.parseInt(cmdBits[2]);
+		}
+		catch(Exception e) {
+			System.out.println("= 게시물 페이지를 정수로 입력해주세요 =");
+			return;
+		}
+				
+		int pageGap = 4;
+		int pagePoint = listArticle.size() / pageGap;
+		int startPoint = (listArticle.size() - 1) - (pageGap*(inputedId - 1));
+		int endPoint = startPoint - pageGap;
+		
+		if(pagePoint < 0 || pagePoint + 1 < inputedId || inputedId <= 0){
+			System.out.printf("= %d번 페이지는 존재하지 않습니다 =\n", inputedId);
+			return;
+		}
+		
 		System.out.println("게시판 / 번호 / 작성일 / 작성자 / 제목 / 조회수");
 		
-		for(Article article : listArticle) {
+		if(pagePoint == 0 || pagePoint + 1 == inputedId) {
+			for(int i = startPoint ; i >= 0 ; i--) {				
+				System.out.printf("%s 게시판 /", listArticle.get(i).extra__boardName);
+				System.out.printf(" %d /", listArticle.get(i).id);
+				System.out.printf(" %s /", listArticle.get(i).regDate);
+				System.out.printf(" %s /", listArticle.get(i).extra__writer);
+				System.out.printf(" %s /", listArticle.get(i).title);
+				System.out.printf(" %d \n", listArticle.get(i).hit);				
+			}
+		}else if(pagePoint > 0 && pagePoint + 1 >= inputedId) {
+			for(int i = startPoint ; i > endPoint ; i--) {				
+				System.out.printf("%s 게시판 /", listArticle.get(i).extra__boardName);
+				System.out.printf(" %d /", listArticle.get(i).id);
+				System.out.printf(" %s /", listArticle.get(i).regDate);
+				System.out.printf(" %s /", listArticle.get(i).extra__writer);
+				System.out.printf(" %s /", listArticle.get(i).title);
+				System.out.printf(" %d \n", listArticle.get(i).hit);				
+			}
+		}
+		
+/*		for(Article article : listArticle) {
 			
 			//String boardName = articleService.getBoardNameById(article.boardId);
 			//String writer = memberService.getMemberNameById(article.memberId);
@@ -583,6 +659,7 @@ public class ArticleController extends Controller{
 			System.out.printf(" %d \n", article.hit);
 			
 		}
+*/
 		
 	}
 
