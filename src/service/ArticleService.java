@@ -3,6 +3,7 @@ package service;
 import container.Container;
 import dto.Article;
 import dto.Board;
+import dto.Recommand;
 import dto.Reply;
 
 import java.util.List;
@@ -84,6 +85,22 @@ public class ArticleService {
 
 	public void delReply(int modRepCmd) {
 		articleDao.delReply(modRepCmd);
+	}
+
+	public List<Recommand> getRecommand(int inputedId) {
+		return articleDao.getRecommand(inputedId);
+	}
+
+	public void doRecommand(int inputedId, int loginedId) {
+		articleDao.doRecommand(inputedId, loginedId);
+	}
+
+	public void cancelRecommand(int inputedId, int recId) {
+		articleDao.cancelRecommand(inputedId, recId);		
+	}
+
+	public void doHitPlus(int inputedId) {
+		articleDao.doHitPlus(inputedId);
 	}
 
 }

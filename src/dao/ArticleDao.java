@@ -9,6 +9,7 @@ import com.sbs.example.mysqlutil.SecSql;
 
 import dto.Article;
 import dto.Board;
+import dto.Recommand;
 import dto.Reply;
 
 public class ArticleDao {
@@ -61,16 +62,19 @@ public class ArticleDao {
 		
 		SecSql sql = new SecSql();
 		
-		sql.append("SELECT * ");
-		sql.append("FROM article ");
-		sql.append("WHERE boardId = ?", selectedBoardId);
+		sql.append("SELECT article.*, `member`.name AS extra__writer, board.name AS extra__boardName");
+		sql.append("FROM article");
+		sql.append("Inner Join `member`, board");
+		sql.append("WHERE article.memberId = `member`.id AND article.boardId = board.id");
 		
 		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);
 		
 		List<Article> articles = new ArrayList<>();
 		
 		for(Map<String, Object> map : articleListMap) {
-			articles.add(new Article(map));
+			if((int)map.get("memberId") == selectedBoardId) {
+				articles.add(new Article(map));
+			}
 		}
 		
 		return articles;
@@ -174,6 +178,7 @@ public class ArticleDao {
 		
 		sql.append("INSERT INTO reply ");
 		sql.append("SET regDate = NOW() ");
+		sql.append(", updateDate = NOW()");
 		sql.append(", `body` = ?", body);
 		sql.append(", articleId = ?", inputedId);
 		sql.append(", memberId = ?", loginedId);
@@ -286,7 +291,8 @@ public class ArticleDao {
 		SecSql sql = new SecSql();
 		
 		sql.append("UPDATE reply");
-		sql.append("SET `body` = ?", modRepBody);
+		sql.append("SET updateDAte = NOW()");
+		sql.append(", `body` = ?", modRepBody);
 		sql.append("WHERE id = ?", modRepCmd);
 		
 		MysqlUtil.update(sql);
@@ -301,6 +307,78 @@ public class ArticleDao {
 		sql.append("WHERE id = ?", modRepCmd);
 		
 		MysqlUtil.delete(sql);
+		
+	}
+
+	public List<Recommand> getRecommand(int inputedId) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT *");
+		sql.append("FROM recommand");
+		sql.append("WHERE articleId = ?", inputedId);
+		
+		List<Map<String, Object>> recommandListMap = MysqlUtil.selectRows(sql);
+		
+		List<Recommand> rec = new ArrayList<>();
+		
+		for(Map<String, Object> map : recommandListMap) {
+			rec.add(new Recommand(map));
+		}
+		
+		return rec;
+	}
+
+	public void doRecommand(int inputedId, int loginedId) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("INSERT INTO recommand");
+		sql.append("SET regDate = NOW()");
+		sql.append(", articleId = ?", inputedId);
+		sql.append(", memberId = ?", loginedId);
+		sql.append(", recommand = true ; ");
+		
+		MysqlUtil.update(sql);
+		sql = new SecSql();
+		
+		sql.append("UPDATE article");
+		sql.append("SET recommand = recommand + 1");
+		sql.append("WHERE id = ? ;", inputedId);
+		
+		MysqlUtil.update(sql);
+		
+	}
+
+	public void cancelRecommand(int inputedId, int recId) {
+
+		SecSql sql = new SecSql();
+		
+		sql.append("UPDATE recommand");
+		sql.append("SET regDate = NOW()");
+		sql.append(", recommand = false ");
+		sql.append("WHERE id = ?", recId);
+		
+		MysqlUtil.update(sql);
+		sql = new SecSql();
+		
+		sql.append("UPDATE article");
+		sql.append("SET recommand = recommand - 1");
+		sql.append("WHERE id = ? ;", inputedId);
+		
+		MysqlUtil.update(sql);
+		
+	}
+
+	public void doHitPlus(int inputedId) {
+		
+		SecSql sql = new SecSql();
+		
+		sql.append("UPDATE article");
+		sql.append("SET hit = hit + 1");
+		sql.append("WHERE id = ?", inputedId);
+		
+		MysqlUtil.update(sql);
 		
 	}
 

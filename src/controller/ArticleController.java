@@ -6,6 +6,7 @@ import java.util.Scanner;
 import container.Container;
 import dto.Article;
 import dto.Board;
+import dto.Recommand;
 import dto.Reply;
 import service.ArticleService;
 import service.MemberService;
@@ -52,7 +53,91 @@ public class ArticleController extends Controller{
 			selectBoard(cmd);
 		}else if(cmd.startsWith("article curruntBoard")) {
 			curruntBoard();
+		}else if(cmd.startsWith("article recommand")) {
+			recommand(cmd);
+		}else if(cmd.startsWith("article cancelRecommand")) {
+			cancelRecommand(cmd);
 		}
+		
+	}
+
+	private void cancelRecommand(String cmd) {
+
+		System.out.println("== 게시물 추천 취소 ==");
+		
+		if(Container.session.getLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}
+		
+		int inputedId = 0;
+		String[] cmdBits = cmd.split(" ");
+		try {
+			inputedId = Integer.parseInt(cmdBits[2]);
+		}
+		catch(Exception e) {
+			System.out.println("= 추천 취소할 게시물 번호를 정수로 입력해주세요 =");
+			return;
+		}
+		
+		Article article = articleService.getArticle(inputedId);
+		
+		if(article == null) {
+			System.out.println("= 존재하지 않는 게시물입니다 =");
+			return;
+		}
+		
+		List<Recommand> recommands = articleService.getRecommand(inputedId);
+		
+		for(Recommand rec : recommands) {
+			if(rec.memberId == Container.session.getLoginedId()) {
+				System.out.println("= 추천이 취소되었습니다 =");
+				articleService.cancelRecommand(inputedId, rec.id);
+				return;
+			}
+		}
+		
+		System.out.printf("= %d번 게시물을 추천하지 않은 상태입니다 =", inputedId);
+		
+	}
+
+	private void recommand(String cmd) {
+		
+		System.out.println("== 게시물 추천 ==");
+		
+		if(Container.session.getLogined() == false) {
+			System.out.println("= 로그인 후 이용해주세요 =");
+			return;
+		}
+		
+		int inputedId = 0;
+		String[] cmdBits = cmd.split(" ");
+		try {
+			inputedId = Integer.parseInt(cmdBits[2]);
+		}
+		catch(Exception e) {
+			System.out.println("= 추천할 게시물 번호를 정수로 입력해주세요 =");
+			return;
+		}
+		
+		Article article = articleService.getArticle(inputedId);
+		
+		if(article == null) {
+			System.out.println("= 존재하지 않는 게시물입니다 =");
+			return;
+		}
+		
+		List<Recommand> recommands = articleService.getRecommand(inputedId);
+		
+		for(Recommand rec : recommands) {
+			if(rec.memberId == Container.session.getLoginedId()) {
+				System.out.println("== 이미 추천한 게시물입니다 ==");
+				return;
+			}
+		}
+		
+		articleService.doRecommand(inputedId, Container.session.getLoginedId());
+		System.out.printf("= %d번 게시물이 추천되었습니다 =\n", inputedId);
 		
 	}
 
@@ -146,10 +231,11 @@ public class ArticleController extends Controller{
 			return;
 		}
 		
-		System.out.printf(" 댓글 작성 : ");		
+		System.out.printf("댓글 작성 : ");		
 		String body = sc.nextLine();
 		
 		articleService.writeReply(body, Container.session.getLoginedId(), inputedId);
+		System.out.printf("= %d번 게시물에 댓글을 남겼습니다 =\n", inputedId);
 		
 	}
 	
@@ -456,6 +542,9 @@ public class ArticleController extends Controller{
 		System.out.printf("내용 : %s\n", detailArticle.body);
 		System.out.printf("작성자 : %s\n", writer);
 		System.out.printf("조회수 : %d\n", detailArticle.hit);
+		System.out.printf("추천 수 : %d\n", detailArticle.recommand);
+		
+		articleService.doHitPlus(inputedId);
 		
 		System.out.println("== 댓글 작성자 / 댓글 내용 ==");
 		
@@ -475,22 +564,23 @@ public class ArticleController extends Controller{
 
 	private void list() {
 		
-		List<Article> listArticle = articleService.getListArticle();
+		List<Article> listArticle = articleService.getListArticle(Container.session.getSelectedBoardId());
 		
 		System.out.println("= 게시물 목록 =");
 		
-		System.out.println("번호 / 작성일 / 작성자 / 제목");
+		System.out.println("게시판 / 번호 / 작성일 / 작성자 / 제목 / 조회수");
 		
 		for(Article article : listArticle) {
 			
 			//String boardName = articleService.getBoardNameById(article.boardId);
 			//String writer = memberService.getMemberNameById(article.memberId);
 
-			System.out.printf("%s /", article.extra__boardName);
+			System.out.printf("%s 게시판 /", article.extra__boardName);
 			System.out.printf(" %d /", article.id);
 			System.out.printf(" %s /", article.regDate);
 			System.out.printf(" %s /", article.extra__writer);
-			System.out.printf(" %s \n", article.title);
+			System.out.printf(" %s /", article.title);
+			System.out.printf(" %d \n", article.hit);
 			
 		}
 		
