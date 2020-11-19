@@ -33,5 +33,5 @@ public class MemberService {
 	public void modify(String modId, String modPw, String modName, int loginedId) {
 		memberDao.modify(modId, modPw, modName, loginedId);
 	}
-
+	
 }

@@ -6,6 +6,7 @@ import java.util.Scanner;
 import container.Container;
 import dto.Article;
 import dto.Board;
+import dto.Member;
 import dto.Recommand;
 import dto.Reply;
 import service.ArticleService;
@@ -186,6 +187,11 @@ public class ArticleController extends Controller{
 		}
 		
 		System.out.println("== 게시판 생성 ==");
+		
+		if(Container.session.isAdmin(Container.session.getLoginedId()) == false) {
+			System.out.println("= 권한이 없습니다 =");
+			return;
+		}
 		
 		int missCountMax = 3;
 		int missCount = 0;
@@ -600,9 +606,14 @@ public class ArticleController extends Controller{
 
 	private void list(String cmd) {
 		
-		System.out.println("= 게시물 목록 =");
+		System.out.println("== 게시물 목록 ==");
 		
 		List<Article> listArticle = articleService.getListArticle(Container.session.getSelectedBoardId());
+		
+		if(listArticle.size() == 0) {
+			System.out.println("= 등록된 게시물이 없습니다 =");
+			return;
+		}
 		
 		int inputedId = 1;
 		String[] cmdBits = cmd.split(" ");

@@ -29,7 +29,8 @@ public class ArticleDao {
 		sql.append(", `body` = ?", body);
 		sql.append(", hit = 10");
 		sql.append(", memberId = ?", loginedId);
-		sql.append(", boardID = ?", selectedBoardId);
+		sql.append(", boardId = ?", selectedBoardId);
+		sql.append(", recommand = 0");
 		
 		int id = MysqlUtil.insert(sql);
 		
@@ -72,7 +73,7 @@ public class ArticleDao {
 		List<Article> articles = new ArrayList<>();
 		
 		for(Map<String, Object> map : articleListMap) {
-			if((int)map.get("memberId") == selectedBoardId) {
+			if((int)map.get("boardId") == selectedBoardId) {
 				articles.add(new Article(map));
 			}
 		}

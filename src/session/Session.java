@@ -40,4 +40,11 @@ public class Session {
 		selectedBoardId = inputedId;
 	}
 
+	public boolean isAdmin(int loginedId) {
+		if(loginedId == 1) {
+			return true;
+		}
+		return false;
+	}
+
 }
