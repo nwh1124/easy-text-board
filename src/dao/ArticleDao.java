@@ -27,7 +27,7 @@ public class ArticleDao {
 		sql.append(", updateDate = NOW()");
 		sql.append(", title = ?", title);
 		sql.append(", `body` = ?", body);
-		sql.append(", hit = 10");
+		sql.append(", hit = 0");
 		sql.append(", memberId = ?", loginedId);
 		sql.append(", boardId = ?", selectedBoardId);
 		sql.append(", recommand = 0");

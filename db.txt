@@ -1,0 +1,118 @@
+DROP DATABASE IF EXISTS textBoard;
+
+CREATE DATABASE textBoard;
+
+USE textBoard;
+
+CREATE TABLE article(
+id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+regDate DATETIME NOT NULL,
+updateDate DATETIME NOT NULL,
+title VARCHAR(100) NOT NULL,
+`body` TEXT NOT NULL,
+hit INT(10) NOT NULL,
+recommand INT(10) NOT NULL,
+memberId INT(10) UNSIGNED NOT NULL,
+boardId INT(10) UNSIGNED NOT NULL
+);
+
+CREATE TABLE `member`(
+id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+regDate DATETIME NOT NULL,
+updateDate DATETIME NOT NULL,
+loginId VARCHAR(100) NOT NULL,
+loginPw VARCHAR(100) NOT NULL,
+`name` VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE board(
+id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+regDate DATETIME NOT NULL,
+updateDate DATETIME NOT NULL,
+`name` VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE reply(
+id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+regDate DATETIME NOT NULL,
+updateDate DATETIME NOT NULL,
+`body` TEXT NOT NULL,
+articleId INT(10) UNSIGNED NOT NULL,
+memberId INT(10) UNSIGNED NOT NULL
+);
+
+CREATE TABLE recommand(
+id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+regDate DATETIME NOT NULL,
+articleId INT(10) UNSIGNED NOT NULL,
+memberId INT(10) UNSIGNED NOT NULL,
+recommand BOOLEAN NOT NULL
+);
+
+INSERT board
+SET regDate = NOW(),
+`name` = '자유';
+
+INSERT `member`
+SET regDate = NOW(),
+updateDate = NOW(),
+loginId = 'aaa',
+loginPw = 'aaa',
+`name` = '관리자';
+
+INSERT `member`
+SET regDate = NOW(),
+updateDate = NOW(),
+loginId = 'bbb',
+loginPw = 'bbb',
+`name` = '유저1';
+
+INSERT article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목1',
+`body` = '내용1',
+hit = 0,
+memberId = 1,
+boardId = 1,
+recommand = 0;
+
+INSERT article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목2',
+`body` = '내용2',
+hit = 0,
+memberId = 1,
+boardId = 1,
+recommand = 0;
+
+INSERT article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목3',
+`body` = '내용3',
+hit = 0,
+memberId = 1,
+boardId = 1,
+recommand = 0;
+
+INSERT article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목4',
+`body` = '내용4',
+hit = 0,
+memberId = 1,
+boardId = 1,
+recommand = 0;
+
+INSERT article
+SET regDate = NOW(),
+updateDate = NOW(),
+title = '제목5',
+`body` = '내용5',
+hit = 0,
+memberId = 1,
+boardId = 1,
+recommand = 0;
