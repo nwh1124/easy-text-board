@@ -90,14 +90,14 @@ public class ArticleController extends Controller{
 		List<Recommand> recommands = articleService.getRecommand(inputedId);
 		
 		for(Recommand rec : recommands) {
-			if(rec.memberId == Container.session.getLoginedId()) {
+			if(rec.memberId == Container.session.getLoginedId() && rec.recommand == true) {
 				System.out.println("= 추천이 취소되었습니다 =");
 				articleService.cancelRecommand(inputedId, rec.id);
 				return;
 			}
 		}
 		
-		System.out.printf("= %d번 게시물을 추천하지 않은 상태입니다 =", inputedId);
+		System.out.printf("= %d번 게시물을 추천하지 않은 상태입니다 =\n", inputedId);
 		
 	}
 
@@ -130,7 +130,7 @@ public class ArticleController extends Controller{
 		List<Recommand> recommands = articleService.getRecommand(inputedId);
 		
 		for(Recommand rec : recommands) {
-			if(rec.memberId == Container.session.getLoginedId()) {
+			if(rec.memberId == Container.session.getLoginedId() && rec.recommand == true) {
 				System.out.println("== 이미 추천한 게시물입니다 ==");
 				return;
 			}
@@ -624,7 +624,7 @@ public class ArticleController extends Controller{
 			return;
 		}
 		
-		System.out.println("게시판 / 번호 / 작성일 / 작성자 / 제목 / 조회수");
+		System.out.println("게시판 / 번호 / 작성일 / 작성자 / 제목 / 조회수 / 추천수");
 		
 		if(pagePoint == 0 || pagePoint + 1 == inputedId) {
 			for(int i = startPoint ; i >= 0 ; i--) {				
@@ -633,7 +633,8 @@ public class ArticleController extends Controller{
 				System.out.printf(" %s /", listArticle.get(i).regDate);
 				System.out.printf(" %s /", listArticle.get(i).extra__writer);
 				System.out.printf(" %s /", listArticle.get(i).title);
-				System.out.printf(" %d \n", listArticle.get(i).hit);				
+				System.out.printf(" %d /", listArticle.get(i).hit);	
+				System.out.printf(" %d \n", listArticle.get(i).recommand);			
 			}
 		}else if(pagePoint > 0 && pagePoint + 1 >= inputedId) {
 			for(int i = startPoint ; i > endPoint ; i--) {				
@@ -642,7 +643,9 @@ public class ArticleController extends Controller{
 				System.out.printf(" %s /", listArticle.get(i).regDate);
 				System.out.printf(" %s /", listArticle.get(i).extra__writer);
 				System.out.printf(" %s /", listArticle.get(i).title);
-				System.out.printf(" %d \n", listArticle.get(i).hit);				
+				System.out.printf(" %d /", listArticle.get(i).hit);	
+				System.out.printf(" %d \n", listArticle.get(i).recommand);		
+
 			}
 		}
 		
