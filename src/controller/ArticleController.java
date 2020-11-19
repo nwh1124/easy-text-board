@@ -614,7 +614,7 @@ public class ArticleController extends Controller{
 			return;
 		}
 				
-		int pageGap = 4;
+		int pageGap = 5;
 		int pagePoint = listArticle.size() / pageGap;
 		int startPoint = (listArticle.size() - 1) - (pageGap*(inputedId - 1));
 		int endPoint = startPoint - pageGap;

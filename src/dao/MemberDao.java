@@ -83,7 +83,8 @@ public class MemberDao {
 		SecSql sql = new SecSql();
 		
 		sql.append("UPDATE `member`");
-		sql.append("SET loginId = ?", modId);
+		sql.append("SET updateDate = NOW()");
+		sql.append(", loginId = ?", modId);
 		sql.append(", loginPw = ?", modPw);
 		sql.append(", `name` = ?", modName);
 		sql.append("WHERE id = ?", loginedId);
